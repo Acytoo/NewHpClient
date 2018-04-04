@@ -5,9 +5,13 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -94,6 +98,12 @@ public class AnotherDay extends AppCompatActivity {
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.AnotherDayContent);
 
+        Date c = Calendar.getInstance().getTime();
+        String tempdate = c.toString();
+        //Log.d("Date", temp);
+        TextView dateToday = findViewById(R.id.showAnoDate);
+        dateToday.setText(tempdate);
+
 
         // Set up the user interaction to manually show or hide the system UI.
         mContentView.setOnClickListener(new View.OnClickListener() {
@@ -111,7 +121,7 @@ public class AnotherDay extends AppCompatActivity {
         Bundle receivedData = getIntent().getExtras();
         if (receivedData == null)
             return;
-        String dispDate = receivedData.getString("Date");
+        String dispDate = receivedData.getString("dateInfo");
         TextView anoData = findViewById(R.id.AnotherDayContent);
         anoData.setText(dispDate);
 

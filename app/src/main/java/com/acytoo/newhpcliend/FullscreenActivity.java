@@ -1,9 +1,12 @@
 package com.acytoo.newhpcliend;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,6 +15,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
@@ -129,10 +133,17 @@ GestureDetector.OnDoubleTapListener{
         hide();
         Date c = Calendar.getInstance().getTime();
         String temp = c.toString();
-        Log.d("Date", temp);
+        //Log.d("Date", temp);
         TextView dateToday = findViewById(R.id.showDate);
         dateToday.setText(temp);
 
+        Bundle receivedInfo = getIntent().getExtras();
+        String dateInfo = "Today";
+        if (receivedInfo == null)
+            return;
+        dateInfo = receivedInfo.getString("dateInfo");
+        TextView dateToShow = findViewById(R.id.dateToShow);
+        dateToShow.setText(dateInfo);
 
         // Set up the user interaction to manually show or hide the system UI.
 
@@ -228,6 +239,9 @@ GestureDetector.OnDoubleTapListener{
     @Override
     public boolean onDoubleTapEvent(MotionEvent e) {
         testMessage.setText("onDoubleTapEvent");
+        Intent loginActivity = new Intent();
+        loginActivity.setClass(FullscreenActivity.this, LoginActivity.class);
+        startActivity(loginActivity);
         return true;
     }
 
@@ -259,6 +273,15 @@ GestureDetector.OnDoubleTapListener{
     public void onLongPress(MotionEvent e) {
         testMessage.setText("onLongPress");
 
+
+        Context context = getApplicationContext();
+        CharSequence text = "Now you can make a new plan";
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+
+
+
     }
 
     @Override
@@ -286,23 +309,23 @@ GestureDetector.OnDoubleTapListener{
         double absX = abs(moveX);
         double absY = abs(moveY);
         Intent anotherDay = new Intent();
-        anotherDay.setClass(FullscreenActivity.this, AnotherDay.class);
+        anotherDay.setClass(FullscreenActivity.this, FullscreenActivity.class);
 
         while (absX > minDistance || absY > minDistance){
             if (absX > absY) {
                 if (moveX > 0) {
-                    anotherDay.putExtra("dateInfo", "Yesterday");
+                    anotherDay.putExtra("dateInfo", "Tomorrow");
                     break;
                 } else {
-                    anotherDay.putExtra("dateInfo", "Tomorrow");
+                    anotherDay.putExtra("dateInfo", "Yesterday");
                     break;
                 }
             }
             if (moveY > 0){
-                anotherDay.putExtra("dateInfo", "Level Up");
+                anotherDay.putExtra("dateInfo", "Level Down");
                 break;
             }
-            anotherDay.putExtra("dateInfo", "Level Down");
+            anotherDay.putExtra("dateInfo", "Level Up");
             break;
         }
         startActivity(anotherDay);
@@ -335,5 +358,22 @@ GestureDetector.OnDoubleTapListener{
     public boolean onTouchEvent(MotionEvent event) {
         this.gestureDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert).setTitle("Exit")
+                .setMessage("Are you sure?")
+                .setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Intent intent = new Intent(Intent.ACTION_MAIN);
+                        intent.addCategory(Intent.CATEGORY_HOME);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    }
+                }).setNegativeButton("no", null).show();
     }
 }

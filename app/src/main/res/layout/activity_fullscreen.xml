@@ -55,11 +55,13 @@
             android:text="Today" />
 
         <TextView
-            android:id="@+id/positionData"
-            android:layout_width="413dp"
-            android:layout_height="133dp"
+            android:id="@+id/dateToShow"
+            android:layout_width="match_parent"
+            android:layout_height="136dp"
             android:gravity="bottom|center"
-            android:text="moveStaff" />
+            android:textColor="#33b5e5"
+            android:textSize="30sp"
+            android:text="receivedDate" />
     </FrameLayout>
 
 </FrameLayout>
