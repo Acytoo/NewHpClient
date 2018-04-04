@@ -20,16 +20,45 @@
         android:textSize="50sp"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/showDate"
-        android:layout_width="match_parent"
-        android:layout_height="41dp"
-        android:gravity="center"
-        android:textSize="16sp"
-        android:textColor="#33b5e5"
-        android:text="Date Today" />
-
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:id="@+id/fullscreen_content_controls"
+            style="?metaButtonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button
+                android:id="@+id/dummy_button"
+                style="?metaButtonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/dummy_button" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/showDate"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:gravity="center"
+            android:text="Today" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:text="moveStaff" />
+    </FrameLayout>
 
 </FrameLayout>

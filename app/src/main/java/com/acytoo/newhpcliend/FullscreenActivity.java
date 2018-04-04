@@ -112,6 +112,7 @@ GestureDetector.OnDoubleTapListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i("start","start");
 
         setContentView(R.layout.activity_fullscreen);
 
@@ -150,6 +151,7 @@ GestureDetector.OnDoubleTapListener{
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        Log.i("start", "after hide");
     }
 
     @Override
@@ -172,11 +174,15 @@ GestureDetector.OnDoubleTapListener{
 
     private void hide() {
         // Hide UI first
+        Log.i("start", "in hide1");
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
+        Log.i("start", "in hide2");
         mControlsView.setVisibility(View.GONE);
+        Log.i("start", "in hide3");
+
         mVisible = false;
 
         // Schedule a runnable to remove the status and navigation bar after a delay
