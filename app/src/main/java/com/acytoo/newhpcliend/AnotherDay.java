@@ -1,41 +1,24 @@
 package com.acytoo.newhpcliend;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
-
-import java.util.Calendar;
-import java.util.Date;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class FullscreenActivity extends AppCompatActivity implements GestureDetector.OnGestureListener,
-GestureDetector.OnDoubleTapListener{
+public class AnotherDay extends AppCompatActivity {
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
     private static final boolean AUTO_HIDE = true;
-    /**
-     * The following two variables are used for test and gesture detect purpose.
-     * Alec Chen  2018.4.3
-     *
-     */
-    private TextView testMessage;
-    private GestureDetectorCompat gestureDetector;
 
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -91,14 +74,6 @@ GestureDetector.OnDoubleTapListener{
      * system UI. This is to prevent the jarring behavior of controls going away
      * while interacting with activity UI.
      */
-
-    /**
-
-    Alec Chen
-     Since I comment the dummy button, the following listener may not use.
-
-     */
-    /*
     private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -107,49 +82,39 @@ GestureDetector.OnDoubleTapListener{
             }
             return false;
         }
-    };*/
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_fullscreen);
+        setContentView(R.layout.activity_another_day);
 
         mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mContentView = findViewById(R.id.fullscreen_content);
-
-        testMessage = findViewById(R.id.fullscreen_content);
-        this.gestureDetector = new GestureDetectorCompat(this, this);
-        gestureDetector.setOnDoubleTapListener(this);
-
-        hide();
-        Date c = Calendar.getInstance().getTime();
-        String temp = c.toString();
-        Log.d("Date", temp);
-        TextView dateToday = findViewById(R.id.showDate);
-        dateToday.setText(temp);
+        mContentView = findViewById(R.id.AnotherDayContent);
 
 
         // Set up the user interaction to manually show or hide the system UI.
-
-        /**
-         *
-         * Alec Chen
-         *
-         */
-        /*
         mContentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 toggle();
             }
-        });*/
+        });
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+
+        Bundle receivedData = getIntent().getExtras();
+        if (receivedData == null)
+            return;
+        String dispDate = receivedData.getString("Date");
+        TextView anoData = findViewById(R.id.AnotherDayContent);
+        anoData.setText(dispDate);
+
     }
 
     @Override
@@ -203,74 +168,5 @@ GestureDetector.OnDoubleTapListener{
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
-    }
-
-    @Override
-    public boolean onSingleTapConfirmed(MotionEvent e) {
-        testMessage.setText("onSingleTapConfirmed");
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTap(MotionEvent e) {
-        testMessage.setText("onDoubleTap");
-        return true;
-    }
-
-    @Override
-    public boolean onDoubleTapEvent(MotionEvent e) {
-        testMessage.setText("onDoubleTapEvent");
-        return true;
-    }
-
-    @Override
-    public boolean onDown(MotionEvent e) {
-        testMessage.setText("onDown");
-        return true;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-        testMessage.setText("onShowPress");
-
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        testMessage.setText("onSingleTapUp");
-        return true;
-    }
-
-    @Override
-    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        testMessage.setText("onScroll");
-        return true;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-        testMessage.setText("onLongPress");
-
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        testMessage.setText("onFling");
-        Intent anotherDay = new Intent();
-        anotherDay.setClass(FullscreenActivity.this, AnotherDay.class);
-
-        /**
-         * ACcording MotionEvent to judge which side you are fling, give the exact day you want.
-         */
-
-        final String thatDay = "The date you want to display";
-        anotherDay.putExtra("Date", thatDay);
-        startActivity(anotherDay);
-        return true;
-    }
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        this.gestureDetector.onTouchEvent(event);
-        return super.onTouchEvent(event);
     }
 }
