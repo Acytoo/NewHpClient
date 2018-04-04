@@ -55,9 +55,10 @@
             android:text="Today" />
 
         <TextView
-            android:id="@+id/textView2"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:id="@+id/positionData"
+            android:layout_width="413dp"
+            android:layout_height="133dp"
+            android:gravity="bottom|center"
             android:text="moveStaff" />
     </FrameLayout>
 

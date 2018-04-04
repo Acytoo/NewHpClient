@@ -18,6 +18,8 @@ import org.w3c.dom.Text;
 import java.util.Calendar;
 import java.util.Date;
 
+import static java.lang.StrictMath.abs;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -261,17 +263,72 @@ GestureDetector.OnDoubleTapListener{
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+
+        /**
+         * we can define a min move length and a min move velocity to decrease miss taken.
+         * Alec Chen
+         */
+        double minVelocity = 10.0;
+        double minDistance = 120.0;
         testMessage.setText("onFling");
+
+        float moveX = e1.getX(0) - e2.getX(0);
+        float moveY = e1.getY(0) - e2.getY(0);
+
+        //Calculate the direction user's finger fling, if its horizontal: Flag = 1, else, Flag = 0
+
+        boolean horizontaolFlag = true;
+        //horizontaolFlag = (moveX > moveY)? true : false;
+
+        //I hope there is a faster way to calculate this, though it may not important.
+        // Alec Chen 2018 4 4 21.04
+        double absX = abs(moveX);
+        double absY = abs(moveY);
         Intent anotherDay = new Intent();
         anotherDay.setClass(FullscreenActivity.this, AnotherDay.class);
 
-        /**
-         * ACcording MotionEvent to judge which side you are fling, give the exact day you want.
-         */
+        while (absX > minDistance || absY > minDistance){
+            if (absX > absY) {
+                if (moveX > 0) {
+                    anotherDay.putExtra("dateInfo", "Yesterday");
+                    break;
+                } else {
+                    anotherDay.putExtra("dateInfo", "Tomorrow");
+                    break;
+                }
+            }
+            if (moveY > 0){
+                anotherDay.putExtra("dateInfo", "Level Up");
+                break;
+            }
+            anotherDay.putExtra("dateInfo", "Level Down");
+            break;
+        }
+        startActivity(anotherDay);
+        // This will be the end of the function, or we can just give a flag of the four situation, and a switch case
+
+        /*
+
+
+        String temp = Float.toString(moveX / abs(moveY));
+
+        TextView posInfo = findViewById(R.id.positionData);
+        posInfo.setText(temp);
+
+        Log.i("PositionMovement", temp);
+
+
+        Intent anotherDay = new Intent();
+        anotherDay.setClass(FullscreenActivity.this, AnotherDay.class);
+
+
+         // ACcording MotionEvent to judge which side you are fling, give the exact day you want.
+
 
         final String thatDay = "The date you want to display";
         anotherDay.putExtra("Date", thatDay);
-        startActivity(anotherDay);
+        startActivity(anotherDay);*/
         return true;
     }
     @Override
