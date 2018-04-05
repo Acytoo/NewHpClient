@@ -85,13 +85,16 @@ GestureDetector.OnDoubleTapListener{
             mControlsView.setVisibility(View.VISIBLE);
         }
     };
+
+
+    /*
     private boolean mVisible;
     private final Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
             hide();
         }
-    };
+    };*/
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
@@ -118,11 +121,11 @@ GestureDetector.OnDoubleTapListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i("start","start");
+        //Log.i("start","start");
 
         setContentView(R.layout.activity_fullscreen);
 
-        mVisible = true;
+        //mVisible = true;
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
@@ -130,7 +133,25 @@ GestureDetector.OnDoubleTapListener{
         this.gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
 
-        hide();
+
+
+
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
+        mControlsView.setVisibility(View.GONE);
+
+        //mVisible = false;
+
+        // Schedule a runnable to remove the status and navigation bar after a delay
+        mHideHandler.removeCallbacks(mShowPart2Runnable);
+        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
+
+
+
+
+        //hide();
         Date c = Calendar.getInstance().getTime();
         String temp = c.toString();
         //Log.d("Date", temp);
@@ -164,9 +185,9 @@ GestureDetector.OnDoubleTapListener{
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
         //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-        Log.i("start", "after hide");
+        //Log.i("start", "after hide");
     }
-
+/*
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -187,14 +208,14 @@ GestureDetector.OnDoubleTapListener{
 
     private void hide() {
         // Hide UI first
-        Log.i("start", "in hide1");
+        //Log.i("start", "in hide1");
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.hide();
         }
-        Log.i("start", "in hide2");
+        //Log.i("start", "in hide2");
         mControlsView.setVisibility(View.GONE);
-        Log.i("start", "in hide3");
+        //Log.i("start", "in hide3");
 
         mVisible = false;
 
@@ -213,16 +234,17 @@ GestureDetector.OnDoubleTapListener{
         // Schedule a runnable to display UI elements after a delay
         mHideHandler.removeCallbacks(mHidePart2Runnable);
         mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
-    }
+    }*/
 
     /**
      * Schedules a call to hide() in delay milliseconds, canceling any
      * previously scheduled calls.
      */
+    /*
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
-    }
+    }*/
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -292,7 +314,7 @@ GestureDetector.OnDoubleTapListener{
          * we can define a min move length and a min move velocity to decrease miss taken.
          * Alec Chen
          */
-        double minVelocity = 10.0;
+        //double minVelocity = 10.0;
         double minDistance = 120.0;
         testMessage.setText("onFling");
 
@@ -315,20 +337,30 @@ GestureDetector.OnDoubleTapListener{
             if (absX > absY) {
                 if (moveX > 0) {
                     anotherDay.putExtra("dateInfo", "Tomorrow");
+                    startActivity(anotherDay);
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
                     break;
                 } else {
                     anotherDay.putExtra("dateInfo", "Yesterday");
+                    startActivity(anotherDay);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
                     break;
                 }
             }
             if (moveY > 0){
                 anotherDay.putExtra("dateInfo", "Level Down");
+                startActivity(anotherDay);
+                overridePendingTransition(R.anim.go_up, R.anim.go_up);
                 break;
             }
             anotherDay.putExtra("dateInfo", "Level Up");
+            startActivity(anotherDay);
+            overridePendingTransition(R.anim.go_down, R.anim.go_down);
             break;
         }
-        startActivity(anotherDay);
+
+        //startActivity(anotherDay);
+        //overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
         // This will be the end of the function, or we can just give a flag of the four situation, and a switch case
 
         /*

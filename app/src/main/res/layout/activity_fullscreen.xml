@@ -57,11 +57,12 @@
         <TextView
             android:id="@+id/dateToShow"
             android:layout_width="match_parent"
-            android:layout_height="136dp"
+            android:layout_height="94dp"
             android:gravity="bottom|center"
+            android:text="receivedDate"
             android:textColor="#33b5e5"
-            android:textSize="30sp"
-            android:text="receivedDate" />
+            android:textSize="30sp" />
+
     </FrameLayout>
 
 </FrameLayout>
