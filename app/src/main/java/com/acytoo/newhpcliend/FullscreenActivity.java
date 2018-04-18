@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,11 +30,7 @@ import static java.lang.StrictMath.abs;
 
 public class FullscreenActivity extends AppCompatActivity implements GestureDetector.OnGestureListener,
 GestureDetector.OnDoubleTapListener{
-    /**
-     * The following two variables are used for test and gesture detect purpose.
-     * Alec Chen  2018.4.3
-     *
-     */
+
     private TextView testMessage;
     private GestureDetectorCompat gestureDetector;
 
@@ -42,17 +39,20 @@ GestureDetector.OnDoubleTapListener{
     MyService myNewService; //This will be the pointer to the new service.
     boolean isBound = false;
 
-    public void showTime(View v){
+    public void showTime(){
         String currentTime = myNewService.getCurrentTime();
         Context myNewContext = getApplicationContext();
+
         Toast myNewToast = Toast.makeText(myNewContext, currentTime, Toast.LENGTH_LONG);
         myNewToast.show();
     }
-    private ServiceConnection mynewConnection = new ServiceConnection() {
+
+
+    private ServiceConnection myNewConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             MyService.MyLocalBinder binder = (MyService.MyLocalBinder) service;
-            binder.getService();
+            myNewService = binder.getService();
             isBound = true;
 
         }
@@ -75,11 +75,6 @@ GestureDetector.OnDoubleTapListener{
         @SuppressLint("InlinedApi")
         @Override
         public void run() {
-            // Delayed removal of status and navigation bar
-
-            // Note that some of these constants are new as of API 16 (Jelly Bean)
-            // and API 19 (KitKat). It is safe to use them, as they are inlined
-            // at compile-time and do nothing on earlier devices.
             mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE
                     | View.SYSTEM_UI_FLAG_FULLSCREEN
                     | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -102,28 +97,12 @@ GestureDetector.OnDoubleTapListener{
     };
 
 
-    /**
-     * Touch listener to use for in-layout UI controls to delay hiding the
-     * system UI. This is to prevent the jarring behavior of controls going away
-     * while interacting with activity UI.
-     */
-
-    /**
-
-    Alec Chen
-     Since I comment the dummy button, the following listener may not use.
-
-     */
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Log.i("start","start");
-
         setContentView(R.layout.activity_fullscreen);
-
-
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
@@ -147,16 +126,15 @@ GestureDetector.OnDoubleTapListener{
 
 
         final Intent serviceIntent = new Intent(FullscreenActivity.this, MyService.class);
-        bindService(serviceIntent, mynewConnection, Context.BIND_AUTO_CREATE);
+        bindService(serviceIntent, myNewConnection, Context.BIND_AUTO_CREATE);
         //The service should started.
 
 
 
 
-        //hide();
+
         Date c = Calendar.getInstance().getTime();
         String temp = c.toString();
-        //Log.d("Date", temp);
         TextView dateToday = findViewById(R.id.showDate);
         dateToday.setText(temp);
 
@@ -168,20 +146,9 @@ GestureDetector.OnDoubleTapListener{
         TextView dateToShow = findViewById(R.id.dateToShow);
         dateToShow.setText(dateInfo);
 
-        // Set up the user interaction to manually show or hide the system UI.
-
-        /**
-         *
-         * Alec Chen
-         *
-         */
 
     }
 
-    /**
-     * Schedules a call to hide() in delay milliseconds, canceling any
-     * previously scheduled calls.
-     */
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -218,8 +185,8 @@ GestureDetector.OnDoubleTapListener{
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
-        testMessage.setText("onSingleTapUp");
-        //showTime(v);
+
+        showTime();
         return true;
     }
 
@@ -252,7 +219,6 @@ GestureDetector.OnDoubleTapListener{
          * we can define a min move length and a min move velocity to decrease miss taken.
          * Alec Chen
          */
-        //double minVelocity = 10.0;
         double minDistance = 120.0;
         testMessage.setText("onFling");
 
@@ -261,8 +227,6 @@ GestureDetector.OnDoubleTapListener{
 
         //Calculate the direction user's finger fling, if its horizontal: Flag = 1, else, Flag = 0
 
-        boolean horizontaolFlag = true;
-        //horizontaolFlag = (moveX > moveY)? true : false;
 
         //I hope there is a faster way to calculate this, though it may not important.
         // Alec Chen 2018 4 4 21.04
