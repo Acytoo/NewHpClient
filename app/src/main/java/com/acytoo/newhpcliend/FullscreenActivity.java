@@ -1,9 +1,12 @@
 package com.acytoo.newhpcliend;
 
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -24,17 +27,8 @@ import java.util.Date;
 
 import static java.lang.StrictMath.abs;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 public class FullscreenActivity extends AppCompatActivity implements GestureDetector.OnGestureListener,
 GestureDetector.OnDoubleTapListener{
-    /**
-     * Whether or not the system UI should be auto-hidden after
-     * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-     */
-    private static final boolean AUTO_HIDE = true;
     /**
      * The following two variables are used for test and gesture detect purpose.
      * Alec Chen  2018.4.3
@@ -43,16 +37,37 @@ GestureDetector.OnDoubleTapListener{
     private TextView testMessage;
     private GestureDetectorCompat gestureDetector;
 
-    /**
-     * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
-     * user interaction before hiding the system UI.
-     */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
 
-    /**
-     * Some older devices needs a small delay between UI widget updates
-     * and a change of the status and navigation bar.
-     */
+
+    MyService myNewService; //This will be the pointer to the new service.
+    boolean isBound = false;
+
+    public void showTime(View v){
+        String currentTime = myNewService.getCurrentTime();
+        Context myNewContext = getApplicationContext();
+        Toast myNewToast = Toast.makeText(myNewContext, currentTime, Toast.LENGTH_LONG);
+        myNewToast.show();
+    }
+    private ServiceConnection mynewConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            MyService.MyLocalBinder binder = (MyService.MyLocalBinder) service;
+            binder.getService();
+            isBound = true;
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            isBound = false;
+
+        }
+    };
+
+
+
+
+
     private static final int UI_ANIMATION_DELAY = 300;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
@@ -87,14 +102,6 @@ GestureDetector.OnDoubleTapListener{
     };
 
 
-    /*
-    private boolean mVisible;
-    private final Runnable mHideRunnable = new Runnable() {
-        @Override
-        public void run() {
-            hide();
-        }
-    };*/
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
@@ -107,16 +114,7 @@ GestureDetector.OnDoubleTapListener{
      Since I comment the dummy button, the following listener may not use.
 
      */
-    /*
-    private final View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (AUTO_HIDE) {
-                delayedHide(AUTO_HIDE_DELAY_MILLIS);
-            }
-            return false;
-        }
-    };*/
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,7 +123,7 @@ GestureDetector.OnDoubleTapListener{
 
         setContentView(R.layout.activity_fullscreen);
 
-        //mVisible = true;
+
         mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
@@ -142,11 +140,15 @@ GestureDetector.OnDoubleTapListener{
         }
         mControlsView.setVisibility(View.GONE);
 
-        //mVisible = false;
-
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
         mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
+
+
+
+        final Intent serviceIntent = new Intent(FullscreenActivity.this, MyService.class);
+        bindService(serviceIntent, mynewConnection, Context.BIND_AUTO_CREATE);
+        //The service should started.
 
 
 
@@ -173,78 +175,13 @@ GestureDetector.OnDoubleTapListener{
          * Alec Chen
          *
          */
-        /*
-        mContentView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggle();
-            }
-        });*/
 
-        // Upon interacting with UI controls, delay any scheduled hide()
-        // operations to prevent the jarring behavior of controls going away
-        // while interacting with the UI.
-        //findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
-        //Log.i("start", "after hide");
     }
-/*
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-
-        // Trigger the initial hide() shortly after the activity has been
-        // created, to briefly hint to the user that UI controls
-        // are available.
-        delayedHide(100);
-    }
-
-    private void toggle() {
-        if (mVisible) {
-            hide();
-        } else {
-            show();
-        }
-    }
-
-    private void hide() {
-        // Hide UI first
-        //Log.i("start", "in hide1");
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.hide();
-        }
-        //Log.i("start", "in hide2");
-        mControlsView.setVisibility(View.GONE);
-        //Log.i("start", "in hide3");
-
-        mVisible = false;
-
-        // Schedule a runnable to remove the status and navigation bar after a delay
-        mHideHandler.removeCallbacks(mShowPart2Runnable);
-        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
-    }
-
-    @SuppressLint("InlinedApi")
-    private void show() {
-        // Show the system bar
-        mContentView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
-        mVisible = true;
-
-        // Schedule a runnable to display UI elements after a delay
-        mHideHandler.removeCallbacks(mHidePart2Runnable);
-        mHideHandler.postDelayed(mShowPart2Runnable, UI_ANIMATION_DELAY);
-    }*/
 
     /**
      * Schedules a call to hide() in delay milliseconds, canceling any
      * previously scheduled calls.
      */
-    /*
-    private void delayedHide(int delayMillis) {
-        mHideHandler.removeCallbacks(mHideRunnable);
-        mHideHandler.postDelayed(mHideRunnable, delayMillis);
-    }*/
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
@@ -282,6 +219,7 @@ GestureDetector.OnDoubleTapListener{
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         testMessage.setText("onSingleTapUp");
+        //showTime(v);
         return true;
     }
 
@@ -359,31 +297,6 @@ GestureDetector.OnDoubleTapListener{
             break;
         }
 
-        //startActivity(anotherDay);
-        //overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
-        // This will be the end of the function, or we can just give a flag of the four situation, and a switch case
-
-        /*
-
-
-        String temp = Float.toString(moveX / abs(moveY));
-
-        TextView posInfo = findViewById(R.id.positionData);
-        posInfo.setText(temp);
-
-        Log.i("PositionMovement", temp);
-
-
-        Intent anotherDay = new Intent();
-        anotherDay.setClass(FullscreenActivity.this, AnotherDay.class);
-
-
-         // ACcording MotionEvent to judge which side you are fling, give the exact day you want.
-
-
-        final String thatDay = "The date you want to display";
-        anotherDay.putExtra("Date", thatDay);
-        startActivity(anotherDay);*/
         return true;
     }
     @Override
