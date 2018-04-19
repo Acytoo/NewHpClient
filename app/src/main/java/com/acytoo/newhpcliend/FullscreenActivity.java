@@ -68,7 +68,7 @@ GestureDetector.OnDoubleTapListener{
 
 
 
-    private static final int UI_ANIMATION_DELAY = 300;
+    private static final int UI_ANIMATION_DELAY = 30;
     private final Handler mHideHandler = new Handler();
     private View mContentView;
     private final Runnable mHidePart2Runnable = new Runnable() {
@@ -83,7 +83,7 @@ GestureDetector.OnDoubleTapListener{
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private View mControlsView;
+    //private View mControlsView;
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -92,7 +92,7 @@ GestureDetector.OnDoubleTapListener{
             if (actionBar != null) {
                 actionBar.show();
             }
-            mControlsView.setVisibility(View.VISIBLE);
+            //mControlsView.setVisibility(View.VISIBLE);
         }
     };
 
@@ -103,7 +103,8 @@ GestureDetector.OnDoubleTapListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
+        //
+        // mControlsView = findViewById(R.id.fullscreen_content_controls);
         mContentView = findViewById(R.id.fullscreen_content);
 
         testMessage = findViewById(R.id.fullscreen_content);
@@ -117,11 +118,15 @@ GestureDetector.OnDoubleTapListener{
         if (actionBar != null) {
             actionBar.hide();
         }
-        mControlsView.setVisibility(View.GONE);
+
+        //mControlsView.setVisibility(View.GONE);
+        /*
 
         // Schedule a runnable to remove the status and navigation bar after a delay
         mHideHandler.removeCallbacks(mShowPart2Runnable);
-        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);
+        mHideHandler.postDelayed(mHidePart2Runnable, UI_ANIMATION_DELAY);*/
+
+
 
 
 
