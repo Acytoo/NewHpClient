@@ -20,5 +20,10 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <!-- string name="stupid_content">stupidCONTENT</string -->
+
+    <!-- Strings related to EditPlan -->
+    <string name="date_input">Please enter your date here</string>
+    <string name="plan_input">Please enter your plan here</string>
+    <string name="add">ADD</string>
+    <string name="delete">DELETE</string>
 </resources>

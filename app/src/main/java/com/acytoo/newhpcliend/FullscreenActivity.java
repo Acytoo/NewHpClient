@@ -12,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.widget.TextView;
@@ -102,9 +103,15 @@ GestureDetector.OnDoubleTapListener{
         TextView dateToShow = findViewById(R.id.dateToShow);
         dateToShow.setText(dateInfo);
 
+        showPlans();
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showPlans();
+    }
 
     public void showTime(){
         String currentTime = myNewService.getCurrentTime();
@@ -117,7 +124,7 @@ GestureDetector.OnDoubleTapListener{
     public void showPlans(){
         String plans = dbHandler.databaseToString();
         plansText.setText(plans);
-
+        //Log.i("nothing", "showed all plans");
     }
 
 
@@ -182,15 +189,15 @@ GestureDetector.OnDoubleTapListener{
     public void onLongPress(MotionEvent e) {
         testMessage.setText("onLongPress");
 
+        Intent editActivity = new Intent(FullscreenActivity.this, EditPlanActivity.class);
+        startActivity(editActivity);
 
+        /*
         Context context = getApplicationContext();
         CharSequence text = "Now you can make a new plan";
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-
-
-
+        toast.show();*/
     }
 
     @Override

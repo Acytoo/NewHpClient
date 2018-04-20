@@ -6,6 +6,7 @@ import android.database.Cursor;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 
 /**This handler handle the database, the database for infomation
@@ -21,28 +22,28 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 public class MyDBHandler extends SQLiteOpenHelper{
 
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "info.db";  //must have a .db extension
-    public static final String TABLE_PLANS = "plans";     //the table name of your info
+    private static final int DATABASE_VERSION = 1;             //Current I stop using this version.
+    private static final String DATABASE_NAME = "info.db";    //must have a .db extension
+    public static final String TABLE_PLANS = "plans";        //the table name of your info
     public static final String COLUMN_ID = "_id";           //all these three values are worked like
     public static final String COLUMN_DATE = "_date";       //my explains are listed above
     public static final String COLUMN_TODOS = "_todos";
 
     public MyDBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, version);
+        //Log.i("nothing", "In the handler Constructor");
     }
-
-
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        //Log.i("nothing", "Start handler onCreate");
         String query = "CREATE TABLE " + TABLE_PLANS + "(" +
-                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT ," +
-                COLUMN_DATE + " TEXT " +
+                COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                COLUMN_DATE + " TEXT, " +
                 COLUMN_TODOS + " TEXT " +
-                ")";
+                ");";
         db.execSQL(query);
-
+        //Log.i("nothing", "Finish handler onCreate");
     }
 
     @Override
@@ -53,18 +54,17 @@ public class MyDBHandler extends SQLiteOpenHelper{
         onCreate(db);
     }
 
-    public void addProduct(Plans plan){
+    public void addPlan(Plans plan){
         ContentValues values = new ContentValues();
         values.put(COLUMN_DATE, plan.get_date());
-        //Don't know follow put will work or not, but let it be now
         values.put(COLUMN_TODOS, plan.get_todos());
-
         SQLiteDatabase db = getWritableDatabase();
         db.insert(TABLE_PLANS, null, values);
         db.close();
+        //Log.i("nothing", "added plans");
     }
 
-    public void deleteProduct(String todo){
+    public void deletePlan(String todo){
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_PLANS + " WHERE " + COLUMN_TODOS + "=\"" + todo + "\";" );
     }
@@ -87,14 +87,14 @@ public class MyDBHandler extends SQLiteOpenHelper{
 
         while (!c.isAfterLast()){
             if (c.getString(c.getColumnIndex("_date")) != null){
-                dbString += c.getString(c.getColumnIndex("_date"));
-
+                dbString += c.getString(c.getColumnIndex("_date")) + "  " + c.getString(c.getColumnIndex("_todos"));
                 dbString += "\n";
             }
             c.moveToNext();
         }
         c.close();      //Close the cursor and the database
         db.close();
+        //Log.i("nothing", "here is the dbString " + dbString);
         return dbString;
     }
 
