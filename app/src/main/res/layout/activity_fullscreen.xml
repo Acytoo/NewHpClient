@@ -37,5 +37,12 @@
         android:textColor="#33b5e5"
         android:textSize="30sp" />
 
+    <TextView
+        android:id="@+id/plansText"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="plans"
+        android:gravity="bottom|center"/>
+
 
 </FrameLayout>

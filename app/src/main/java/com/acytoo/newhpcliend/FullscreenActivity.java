@@ -17,17 +17,35 @@ import android.view.MotionEvent;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import java.util.Calendar;
 import java.util.Date;
 
 import static java.lang.StrictMath.abs;
+
+/**
+ * Current I use double click on the main screen
+ * Will changed to setting in the future, including a screen
+ * of you login or not, and some plugins setting
+ * I decide to make the weather and someother function as plugins,
+ * there plugins are small apps that don't have a start icon and can be laughed from my main app
+ * working alone is fucking good, especially when all other teammates all working on server part.
+ *
+ * Ale Chen 20.4.2018 17.05
+ *
+ * Maybe we need a check for date input
+ *
+ * I mean the date input must have a fixed format
+ *
+ * Alec Chen 20.4.2018 17.07
+ */
 
 public class FullscreenActivity extends AppCompatActivity implements GestureDetector.OnGestureListener,
 GestureDetector.OnDoubleTapListener{
 
     private TextView testMessage;
     private GestureDetectorCompat gestureDetector;
+    private MyDBHandler dbHandler;
+    private TextView plansText;
 
     MyService myNewService; //This will be the pointer to the new service.
     boolean isBound = false;
@@ -52,6 +70,7 @@ GestureDetector.OnDoubleTapListener{
         setContentView(R.layout.activity_fullscreen);
 
         testMessage = findViewById(R.id.fullscreen_content);
+        plansText = findViewById(R.id.plansText);
         this.gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
 
@@ -60,7 +79,13 @@ GestureDetector.OnDoubleTapListener{
             actionBar.hide();
         }
 
+        dbHandler = new MyDBHandler(this, null, null, 1);
 
+        /**
+         * In the future this service might connect to the internet and fetch
+         * the information, such as class arrangement
+         * Alec Chen 20.4.2018 17.16
+         */
         final Intent serviceIntent = new Intent(FullscreenActivity.this, MyService.class);
         bindService(serviceIntent, myNewConnection, Context.BIND_AUTO_CREATE);
 
@@ -89,7 +114,21 @@ GestureDetector.OnDoubleTapListener{
         myNewToast.show();
     }
 
+    public void showPlans(){
+        String plans = dbHandler.databaseToString();
+        plansText.setText(plans);
 
+    }
+
+
+
+
+
+
+
+
+
+    // All the methods bellow are gesture detect functions
 
 
 
@@ -128,7 +167,7 @@ GestureDetector.OnDoubleTapListener{
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
-
+        showPlans();
         showTime();
         return true;
     }
