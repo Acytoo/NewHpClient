@@ -1,8 +1,7 @@
 <resources>
     <string name="app_name">NewHpCliend</string>
 
-    <!-- string name="dummy_button">Dummy Button</string -->
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="all_plans">All Plans</string>
 
     <string name="title_activity_another_day">AnotherDay</string>
     <string name="dummy_button">Dummy Button</string>
@@ -22,8 +21,14 @@
     </string>
 
     <!-- Strings related to EditPlan -->
-    <string name="date_input">Please enter your date here</string>
-    <string name="plan_input">Please enter your plan here</string>
+    <string name="date">Date</string>
+    <string name="plan">Plan</string>
     <string name="add">ADD</string>
     <string name="delete">DELETE</string>
+
+    <!-- Strings in activity and other java files -->
+    <string name="todayInfo">Today is </string>
+    <string name="dateToShow">\'s plans are </string>
+
+
 </resources>

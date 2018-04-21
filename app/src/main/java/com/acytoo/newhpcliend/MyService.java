@@ -4,7 +4,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,7 +14,6 @@ public class MyService extends Service {
     private final IBinder myBinder = new MyLocalBinder();
 
     public MyService() {
-        Log.i("testForServcie", "In the Service");
     }
 
     @Override
@@ -31,8 +29,8 @@ public class MyService extends Service {
 
     }
 
-    public String getCurrentTime(){
-        SimpleDateFormat df = new SimpleDateFormat("HH:mm:ss", Locale.CHINA);
+    public String getCurrentDate(){
+        SimpleDateFormat df = new SimpleDateFormat("YY.MM.dd", Locale.CHINA);
         return df.format(new Date());
     }
 }

@@ -3,10 +3,8 @@ package com.acytoo.newhpcliend;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 
 /**This handler handle the database, the database for infomation
@@ -31,19 +29,16 @@ public class MyDBHandler extends SQLiteOpenHelper{
 
     public MyDBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
         super(context, DATABASE_NAME, factory, version);
-        //Log.i("nothing", "In the handler Constructor");
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        //Log.i("nothing", "Start handler onCreate");
         String query = "CREATE TABLE " + TABLE_PLANS + "(" +
                 COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 COLUMN_DATE + " TEXT, " +
                 COLUMN_TODOS + " TEXT " +
                 ");";
         db.execSQL(query);
-        //Log.i("nothing", "Finish handler onCreate");
     }
 
     @Override
@@ -61,7 +56,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
         SQLiteDatabase db = getWritableDatabase();
         db.insert(TABLE_PLANS, null, values);
         db.close();
-        //Log.i("nothing", "added plans");
     }
 
     public void deletePlan(String todo){
@@ -94,8 +88,26 @@ public class MyDBHandler extends SQLiteOpenHelper{
         }
         c.close();      //Close the cursor and the database
         db.close();
-        //Log.i("nothing", "here is the dbString " + dbString);
         return dbString;
+    }
+
+    public String getDatePlans(String dateString){
+        String datePlans = "";
+        SQLiteDatabase db = getWritableDatabase();
+
+        String query = "SELECT " + COLUMN_TODOS + " FROM " + TABLE_PLANS + " WHERE " + COLUMN_DATE + " = ?;";
+        Cursor c = db.rawQuery(query, new String[]{dateString});
+        c.moveToFirst();
+        while (!c.isAfterLast()){
+            if (c.getString(c.getColumnIndex(COLUMN_TODOS)) != null){
+                datePlans += c.getString(c.getColumnIndex(COLUMN_TODOS)) + "\n";
+                //datePlans += "\n";
+            }
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
+        return datePlans;
     }
 
 }
