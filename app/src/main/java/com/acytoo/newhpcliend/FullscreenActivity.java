@@ -151,16 +151,16 @@ GestureDetector.OnDoubleTapListener{
 
     public Date getLastDay(Date givenDate){
         /*When given a date, we can get the previous date*/
-        Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
-        ca.setTime(givenDate); //设置时间
-        ca.add(Calendar.DATE, -1); //减1
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(givenDate);
+        ca.add(Calendar.DATE, -1);
         return ca.getTime();
     }
     public Date getNextDay(Date givenDate){
         /*When given a date, we can get the following date*/
-        Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
-        ca.setTime(givenDate); //设置时间
-        ca.add(Calendar.DATE, 1); //加1
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(givenDate);
+        ca.add(Calendar.DATE, 1);
         return ca.getTime();
     }
 

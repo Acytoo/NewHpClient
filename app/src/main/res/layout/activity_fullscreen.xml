@@ -7,9 +7,6 @@
     android:background="#0099cc"
     tools:context=".FullscreenActivity">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
 
 
     <TextView

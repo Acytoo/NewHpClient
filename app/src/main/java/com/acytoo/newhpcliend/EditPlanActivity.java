@@ -1,5 +1,8 @@
 package com.acytoo.newhpcliend;
 
+import android.graphics.Color;
+import android.os.Build;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -22,6 +25,17 @@ public class EditPlanActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_plan);
 
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+            decorView.setSystemUiVisibility(option);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+            ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.hide();
+            }
+        }
         addButton = findViewById(R.id.addButton);
         deleteButton = findViewById(R.id.deleteButton);
         dateInput = findViewById(R.id.editDate);
@@ -67,7 +81,6 @@ public class EditPlanActivity extends AppCompatActivity {
         planBoard.setText(todaysPlans);
         dateInput.setText("");
         planInput.setText("");
-        //Log.i("nothing", "Showed Today's Plans ");
     }
 
 
