@@ -115,7 +115,7 @@ GestureDetector.OnDoubleTapListener{
         /*Then the service started, but it take time to start, so we'd better not using its service in onCreate*/
         df = new SimpleDateFormat("YY.MM.dd", Locale.CHINA);
         setContentView(R.layout.activity_fullscreen);
-        testMessage = findViewById(R.id.fullscreen_content);
+        //testMessage = findViewById(R.id.fullscreen_content);
         plansText = findViewById(R.id.plansText);
         this.gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
@@ -144,7 +144,7 @@ GestureDetector.OnDoubleTapListener{
     @Override
     protected void onStart() {
         super.onStart();
-        showPlans();
+        //showPlans();
         showPlans(df.format(receivedDate));
     }
 
@@ -174,7 +174,7 @@ GestureDetector.OnDoubleTapListener{
 
     public void showPlans(){
         String plans = dbHandler.databaseToString();
-        testMessage.setText(plans);
+        //testMessage.setText(plans);
     }
 
     public void showPlans(String dateString){
@@ -196,19 +196,19 @@ GestureDetector.OnDoubleTapListener{
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        testMessage.setText("onSingleTapConfirmed");
+        //testMessage.setText("onSingleTapConfirmed");
         return true;
     }
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        testMessage.setText("onDoubleTap");
+        //testMessage.setText("onDoubleTap");
         return true;
     }
 
     @Override
     public boolean onDoubleTapEvent(MotionEvent e) {
-        testMessage.setText("onDoubleTapEvent");
+        //testMessage.setText("onDoubleTapEvent");
         Intent loginActivity = new Intent();
         loginActivity.setClass(FullscreenActivity.this, LoginActivity.class);
         startActivity(loginActivity);
@@ -217,34 +217,35 @@ GestureDetector.OnDoubleTapListener{
 
     @Override
     public boolean onDown(MotionEvent e) {
-        testMessage.setText("onDown");
+        //testMessage.setText("onDown");
         return true;
     }
 
     @Override
     public void onShowPress(MotionEvent e) {
-        testMessage.setText("onShowPress");
+        //testMessage.setText("onShowPress");
 
     }
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
-        showPlans();
+        //showPlans();
         showTime();
         return true;
     }
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        testMessage.setText("onScroll");
+        //testMessage.setText("onScroll");
         return true;
     }
 
     @Override
     public void onLongPress(MotionEvent e) {
-        testMessage.setText("onLongPress");
+        //testMessage.setText("onLongPress");
 
         Intent editActivity = new Intent(FullscreenActivity.this, EditPlanActivity.class);
+        editActivity.putExtra("dateToEdit", receivedDate.getTime());
         startActivity(editActivity);
     }
 
@@ -257,7 +258,7 @@ GestureDetector.OnDoubleTapListener{
          * Alec Chen
          */
         double minDistance = 120.0;
-        testMessage.setText("onFling");
+        //testMessage.setText("onFling");
 
         float moveX = e1.getX(0) - e2.getX(0);
         float moveY = e1.getY(0) - e2.getY(0);

@@ -11,14 +11,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class EditPlanActivity extends AppCompatActivity {
 
     private EditText dateInput;
     private EditText planInput;
     private Button addButton;
     private Button deleteButton;
+    private Button showAllButton;
     private TextView planBoard;
     private MyDBHandler dbHandler;
+    private String dateToEdit;
+    private SimpleDateFormat df;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,14 +43,23 @@ public class EditPlanActivity extends AppCompatActivity {
                 actionBar.hide();
             }
         }
+        df = new SimpleDateFormat("YY.MM.dd", Locale.CHINA);
+        Bundle getDateInfo = getIntent().getExtras();
+        if (getDateInfo == null){
+            dateToEdit = df.format(new Date());
+        }
+        else{
+            dateToEdit = df.format(new Date(getDateInfo.getLong("dateToEdit")));
+        }
         addButton = findViewById(R.id.addButton);
         deleteButton = findViewById(R.id.deleteButton);
+        showAllButton = findViewById(R.id.showAllButton);
         dateInput = findViewById(R.id.editDate);
         planInput = findViewById(R.id.editPlan);
         planBoard = findViewById(R.id.planBoard);
         dbHandler = new MyDBHandler(this, null, null, 1);
         showTodaysPlans();
-
+        dateInput.setText(dateToEdit);
         addButton.setOnClickListener(
                 new Button.OnClickListener(){
                     @Override
@@ -66,6 +82,14 @@ public class EditPlanActivity extends AppCompatActivity {
                     }
                 }
         );
+        showAllButton.setOnClickListener(
+                new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        showAllPlans();
+                    }
+                }
+        );
 
     }
 
@@ -77,10 +101,13 @@ public class EditPlanActivity extends AppCompatActivity {
      * I am really a fucking working-hard boy, ah?
      */
     public void showTodaysPlans(){
-        String todaysPlans = dbHandler.databaseToString();
+        String todaysPlans = dbHandler.getDatePlans(dateToEdit);
         planBoard.setText(todaysPlans);
-        dateInput.setText("");
         planInput.setText("");
+    }
+    public void showAllPlans(){
+        String allPlans = dbHandler.databaseToString();
+        planBoard.setText(allPlans);
     }
 
 
