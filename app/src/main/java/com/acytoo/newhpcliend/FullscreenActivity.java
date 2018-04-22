@@ -54,7 +54,6 @@ import static java.lang.StrictMath.abs;
 public class FullscreenActivity extends AppCompatActivity implements GestureDetector.OnGestureListener,
 GestureDetector.OnDoubleTapListener{
 
-    //private TextView testMessage;
     private GestureDetectorCompat gestureDetector;
     private MyDBHandler dbHandler;
     private TextView plansText;
@@ -76,13 +75,16 @@ GestureDetector.OnDoubleTapListener{
             isBound = false;
         }
     };
-
+    public enum Level{
+        DAY, WEEK, MONTH
+    }
+    private Level level;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
-        df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
+
 
         /*
          * Let's judge whether the sdk is higher than 21, since under android 5.0, there is no Immersive Mode
@@ -106,6 +108,8 @@ GestureDetector.OnDoubleTapListener{
 
         dbHandler = new MyDBHandler(this, null, null, 1);
 
+
+
         /*
          * In the future this service might connect to the internet and fetch
          * the information, such as class arrangement
@@ -114,12 +118,11 @@ GestureDetector.OnDoubleTapListener{
 
         final Intent serviceIntent = new Intent(FullscreenActivity.this, MyService.class);
         bindService(serviceIntent, myNewConnection, Context.BIND_AUTO_CREATE);
-
+        df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         /*Then the service started, but it take time to start, so we'd better not using its service in onCreate*/
 
 
 
-        //testMessage = findViewById(R.id.fullscreen_content);
         plansText = findViewById(R.id.plansText);
         this.gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
@@ -129,27 +132,38 @@ GestureDetector.OnDoubleTapListener{
         String todayInfo = this.getString(R.string.todayInfo) + df.format(new Date());
         dateToday.setText(todayInfo);
 
-
+        receivedDate = new Date();
+        level = Level.DAY;
         Bundle receivedDateInfo = getIntent().getExtras();
-        if (receivedDateInfo == null){
-            receivedDate = new Date();
-        }
-        else{
+        if (receivedDateInfo != null){
             receivedDate = new Date(receivedDateInfo.getLong("dateLong"));
+            level = Level.values()[receivedDateInfo.getInt("level")];
         }
 
-        TextView dateToShow = findViewById(R.id.dateToShow);
-        String dateOfShowingPlans = df.format(receivedDate) + this.getString(R.string.dateToShow);
-        dateToShow.setText(dateOfShowingPlans);
+        //Log.i("receivedDate", df.format(receivedDate));
 
-        showPlans(df.format(receivedDate));
+
+        if (level == Level.DAY) {
+            showPlans(df.format(receivedDate));
+        } else if (level == Level.WEEK){
+            showPlans(df.format(receivedDate), df.format(getNextWeek(receivedDate)));
+        } else{
+            showPlans(df.format(receivedDate), df.format(getNextMonth(receivedDate)));
+        }
 
     }
     @Override
     protected void onStart() {
         super.onStart();
-        //showPlans();
-        showPlans(df.format(receivedDate));
+        setTitle();
+        Log.i("receivedDate", df.format(receivedDate));
+        if (level == Level.DAY) {
+            showPlans(df.format(receivedDate));
+        } else if (level == Level.WEEK){
+            showPlans(df.format(receivedDate), df.format(getNextWeek(receivedDate)));
+        } else {
+            showPlans(df.format(receivedDate), df.format(getNextMonth(receivedDate)));
+        }
     }
 
 
@@ -167,6 +181,34 @@ GestureDetector.OnDoubleTapListener{
         ca.add(Calendar.DATE, 1);
         return ca.getTime();
     }
+    public Date getLastWeek(Date givenDate){
+        /*When given a date, we can get the previous date*/
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(givenDate);
+        ca.add(Calendar.WEEK_OF_YEAR, -1);
+        return ca.getTime();
+    }
+    public Date getNextWeek(Date givenDate){
+        /*When given a date, we can get the following date*/
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(givenDate);
+        ca.add(Calendar.WEEK_OF_YEAR, 1);
+        return ca.getTime();
+    }
+    public Date getLastMonth(Date givenDate){
+        /*When given a date, we can get the previous date*/
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(givenDate);
+        ca.add(Calendar.MONTH, -1);
+        return ca.getTime();
+    }
+    public Date getNextMonth(Date givenDate){
+        /*When given a date, we can get the following date*/
+        Calendar ca = Calendar.getInstance();
+        ca.setTime(givenDate);
+        ca.add(Calendar.MONTH, 1);
+        return ca.getTime();
+    }
 
 
     public void showTime(){
@@ -178,20 +220,30 @@ GestureDetector.OnDoubleTapListener{
 
     public void showPlans(){
         String plans = dbHandler.databaseToString();
-        //testMessage.setText(plans);
+        plansText.setText(plans);
     }
-
     public void showPlans(String dateString){
         String plans = dbHandler.getDatePlans(dateString);
         plansText.setText(plans);
     }
+    public void showPlans(String startDate, String endDate){
+        Log.i("enumDate", startDate + " " + endDate);
+        String plans = dbHandler.getSomePlans(startDate, endDate);
+        plansText.setText(plans);
+    }
 
-
-
-
-
-
-
+    public void setTitle(){
+        TextView dateToShow = findViewById(R.id.dateToShow);
+        String dateOfShowingPlans;
+        if (level == Level.DAY) {
+            dateOfShowingPlans = df.format(receivedDate) + this.getString(R.string.dateToShow);
+        } else if (level == Level.WEEK){
+            dateOfShowingPlans = "Plans during week\n" + df.format(receivedDate) + "-" + df.format(getLastDay(getNextWeek(receivedDate)));
+        } else {
+            dateOfShowingPlans = "Plans during month\n" + df.format(receivedDate) + "-" + df.format(getLastDay(getNextMonth(receivedDate)));
+        }
+        dateToShow.setText(dateOfShowingPlans);
+    }
 
 
     // All the methods bellow are gesture detect functions
@@ -247,7 +299,6 @@ GestureDetector.OnDoubleTapListener{
     @Override
     public void onLongPress(MotionEvent e) {
         //testMessage.setText("onLongPress");
-
         Intent editActivity = new Intent(FullscreenActivity.this, EditPlanActivity.class);
         editActivity.putExtra("dateToEdit", receivedDate.getTime());
         startActivity(editActivity);
@@ -281,27 +332,49 @@ GestureDetector.OnDoubleTapListener{
             if (absX > absY) {
                 if (moveX > 0) {
                     //anotherDay.putExtra("dateInfo", "Tomorrow");
-                    Date temp = getNextDay(receivedDate);
-                    anotherDay.putExtra("dateLong", temp.getTime());
+                    Date tempDate;
+                    if (level == Level.DAY) {
+                        tempDate = getNextDay(receivedDate);
+                    } else if (level == Level.WEEK){
+                        tempDate = getNextWeek(receivedDate);
+                    } else {
+                        tempDate = getNextMonth(receivedDate);
+                    }
+                    anotherDay.putExtra("dateLong", tempDate.getTime());
+                    anotherDay.putExtra("level", level.ordinal());
                     startActivity(anotherDay);
                     overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
                     break;
                 } else {
                     //anotherDay.putExtra("dateInfo", "Yesterday");
-                    Date temp = getLastDay(receivedDate);
-                    anotherDay.putExtra("dateLong", temp.getTime());
+                    Date tempDate;
+                    if (level == Level.DAY) {
+                        tempDate = getLastDay(receivedDate);
+                    } else if (level == Level.WEEK){
+                        tempDate = getLastWeek(receivedDate);
+                    } else {
+                        tempDate = getLastMonth(receivedDate);
+                    }
+                    anotherDay.putExtra("dateLong", tempDate.getTime());
+                    anotherDay.putExtra("level", level.ordinal());
                     startActivity(anotherDay);
                     overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
                     break;
                 }
             }
+            //Math.abs(level.ordinal()+2)%3 = Math.abs(level.ordinal()-1)%3
+            //Alec Chen
             if (moveY > 0){
                 //anotherDay.putExtra("dateInfo", "Level Down");
+                anotherDay.putExtra("dateLong", receivedDate.getTime());
+                anotherDay.putExtra("level", Math.abs(level.ordinal()+2)%3);
                 startActivity(anotherDay);
                 overridePendingTransition(R.anim.go_up, R.anim.go_up);
                 break;
             }
             //anotherDay.putExtra("dateInfo", "Level Up");
+            anotherDay.putExtra("dateLong", receivedDate.getTime());
+            anotherDay.putExtra("level", Math.abs(level.ordinal()+4)%3);
             startActivity(anotherDay);
             overridePendingTransition(R.anim.go_down, R.anim.go_down);
             break;

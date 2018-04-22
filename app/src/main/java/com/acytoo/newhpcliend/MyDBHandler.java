@@ -109,10 +109,35 @@ public class MyDBHandler extends SQLiteOpenHelper{
         db.close();
         return datePlans;
     }
-    /*
-    public SQLiteDatabase sortPlansByDate(SQLiteDatabase db){
-        String query = "SELECT * FROM " + TABLE_PLANS + " ORDER BY " + COLUMN_DATE;
 
-    }*/
+    public String getSomePlans(String startDate, String endDate){
+        String dbString = "";
+        SQLiteDatabase db = getWritableDatabase();
+
+        String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_DATE + " <= " + startDate + " AND "
+                + COLUMN_DATE + " > " + endDate +
+                " ORDER BY "+ COLUMN_DATE + " ASC;";
+        /*String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_DATE + " <= ? AND "
+                + COLUMN_DATE + " >= ? ORDER BY "+ COLUMN_DATE + " ASC;";*/
+        //Cursor points to a location in your results
+        //I guess this way makes it faster and consume less resources
+        Cursor c = db.rawQuery(query, null);
+        //Move the cursor to the first row in your database
+        c.moveToFirst();
+
+        while (!c.isAfterLast()){
+            if (c.getString(c.getColumnIndex("_date")) != null){
+                dbString += c.getString(c.getColumnIndex("_date")) + "  " + c.getString(c.getColumnIndex("_todos"));
+                dbString += "\n";
+            }
+            c.moveToNext();
+        }
+        c.close();      //Close the cursor and the database
+        db.close();
+        return dbString;
+    }
+
+
+
 
 }

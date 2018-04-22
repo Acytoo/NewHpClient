@@ -29,6 +29,7 @@
     <!-- Strings in activity and other java files -->
     <string name="todayInfo">Today is </string>
     <string name="dateToShow">\'s plans are </string>
+    <string name="daysPlan1">\'s plans are </string>
 
 
 </resources>
