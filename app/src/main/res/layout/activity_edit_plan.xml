@@ -6,7 +6,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#99ff99"
+
+    android:focusable="true"
+    android:focusableInTouchMode="true"
+
     tools:context=".EditPlanActivity">
+
+    <!-- prevent the view to get focus automatically-->
 
     <TextView
         android:id="@+id/dateLabel"
@@ -36,8 +42,8 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:gravity="center"
-        android:inputType="date"
         android:textColor="#0099cc"
+        android:inputType="date"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
@@ -45,7 +51,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.04" />
 
-    <TextView
+
+    <!--android:inputType="date"
+
+    android:inputType="none" means there is no keyboard pop up
+    but it not working now, I will change the input type in java files
+    -->
+
+
+
+<TextView
         android:id="@+id/planLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

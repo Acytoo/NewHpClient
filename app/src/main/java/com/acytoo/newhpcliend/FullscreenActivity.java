@@ -82,7 +82,7 @@ GestureDetector.OnDoubleTapListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fullscreen);
-        df = new SimpleDateFormat("yy.MM.dd", Locale.US);
+        df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
 
         /*
          * Let's judge whether the sdk is higher than 21, since under android 5.0, there is no Immersive Mode

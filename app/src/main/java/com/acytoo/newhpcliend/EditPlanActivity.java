@@ -1,17 +1,21 @@
 package com.acytoo.newhpcliend;
 
+import android.app.DatePickerDialog;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -43,7 +47,7 @@ public class EditPlanActivity extends AppCompatActivity {
                 actionBar.hide();
             }
         }
-        df = new SimpleDateFormat("yy.MM.dd", Locale.CHINA);
+        df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         Bundle getDateInfo = getIntent().getExtras();
         if (getDateInfo == null){
             dateToEdit = df.format(new Date());
@@ -90,6 +94,27 @@ public class EditPlanActivity extends AppCompatActivity {
                     }
                 }
         );
+        //Finish the listener for buttons
+
+        dateInput.setInputType(InputType.TYPE_NULL);
+        dateInput.setOnFocusChangeListener(
+                new View.OnFocusChangeListener(){
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if (hasFocus){
+                            showDatePickerDialog();
+                        }
+                    }
+                }
+        );
+        dateInput.setOnClickListener(
+                new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        showDatePickerDialog();
+                    }
+                }
+        );
 
     }
 
@@ -108,6 +133,32 @@ public class EditPlanActivity extends AppCompatActivity {
     public void showAllPlans(){
         String allPlans = dbHandler.databaseToString();
         planBoard.setText(allPlans);
+    }
+
+    private void showDatePickerDialog() {
+        Calendar c = Calendar.getInstance();
+        new DatePickerDialog(EditPlanActivity.this, new DatePickerDialog.OnDateSetListener() {
+
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                // TODO Auto-generated method stub
+                String stringMon, stringDay;
+                if (monthOfYear+1 < 10){
+                    stringMon = "0" + Integer.toString(monthOfYear+1);
+                }
+                else{
+                    stringMon = Integer.toString(monthOfYear+1);
+                }
+                if (dayOfMonth < 10){
+                    stringDay = "0" + Integer.toString(dayOfMonth);
+                }
+                else{
+                    stringDay = Integer.toString(dayOfMonth);
+                }
+                dateInput.setText(year+"/"+stringMon+"/"+stringDay);
+            }
+        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+
     }
 
 

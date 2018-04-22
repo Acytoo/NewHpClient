@@ -73,7 +73,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
     public String databaseToString(){
         String dbString = "";
         SQLiteDatabase db = getWritableDatabase();
-        String query = "SELECT * FROM " + TABLE_PLANS + " WHERE 1";
+        String query = "SELECT * FROM " + TABLE_PLANS + " WHERE 1 ORDER BY "+ COLUMN_DATE + " ASC;";
         //Cursor points to a location in your results
         Cursor c = db.rawQuery(query, null);
         //Move the cursor to the first row in your database
@@ -109,5 +109,10 @@ public class MyDBHandler extends SQLiteOpenHelper{
         db.close();
         return datePlans;
     }
+    /*
+    public SQLiteDatabase sortPlansByDate(SQLiteDatabase db){
+        String query = "SELECT * FROM " + TABLE_PLANS + " ORDER BY " + COLUMN_DATE;
+
+    }*/
 
 }
