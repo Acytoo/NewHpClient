@@ -65,7 +65,7 @@
         android:id="@+id/plansText"
         android:layout_width="match_parent"
         android:layout_height="380dp"
-        android:layout_marginTop="132dp"
+        android:layout_marginTop="136dp"
         android:gravity="center"
         android:keepScreenOn="true"
         android:text="plans"

@@ -43,7 +43,7 @@ public class EditPlanActivity extends AppCompatActivity {
                 actionBar.hide();
             }
         }
-        df = new SimpleDateFormat("YY.MM.dd", Locale.CHINA);
+        df = new SimpleDateFormat("yy.MM.dd", Locale.CHINA);
         Bundle getDateInfo = getIntent().getExtras();
         if (getDateInfo == null){
             dateToEdit = df.format(new Date());

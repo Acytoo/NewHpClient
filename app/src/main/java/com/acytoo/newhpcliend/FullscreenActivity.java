@@ -54,7 +54,7 @@ import static java.lang.StrictMath.abs;
 public class FullscreenActivity extends AppCompatActivity implements GestureDetector.OnGestureListener,
 GestureDetector.OnDoubleTapListener{
 
-    private TextView testMessage;
+    //private TextView testMessage;
     private GestureDetectorCompat gestureDetector;
     private MyDBHandler dbHandler;
     private TextView plansText;
@@ -81,7 +81,8 @@ GestureDetector.OnDoubleTapListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_fullscreen);
+        df = new SimpleDateFormat("yy.MM.dd", Locale.US);
 
         /*
          * Let's judge whether the sdk is higher than 21, since under android 5.0, there is no Immersive Mode
@@ -110,11 +111,14 @@ GestureDetector.OnDoubleTapListener{
          * the information, such as class arrangement
          * Alec Chen 20.4.2018 17.16
          */
+
         final Intent serviceIntent = new Intent(FullscreenActivity.this, MyService.class);
         bindService(serviceIntent, myNewConnection, Context.BIND_AUTO_CREATE);
+
         /*Then the service started, but it take time to start, so we'd better not using its service in onCreate*/
-        df = new SimpleDateFormat("YY.MM.dd", Locale.CHINA);
-        setContentView(R.layout.activity_fullscreen);
+
+
+
         //testMessage = findViewById(R.id.fullscreen_content);
         plansText = findViewById(R.id.plansText);
         this.gestureDetector = new GestureDetectorCompat(this, this);

@@ -30,7 +30,7 @@ public class MyService extends Service {
     }
 
     public String getCurrentDate(){
-        SimpleDateFormat df = new SimpleDateFormat("YY.MM.dd", Locale.CHINA);
+        SimpleDateFormat df = new SimpleDateFormat("yy.MM.dd", Locale.CHINA);
         return df.format(new Date());
     }
 }
