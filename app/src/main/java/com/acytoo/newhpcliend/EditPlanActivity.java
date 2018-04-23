@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+
 public class EditPlanActivity extends AppCompatActivity {
 
     private EditText dateInput;
@@ -28,8 +29,10 @@ public class EditPlanActivity extends AppCompatActivity {
     private Button showAllButton;
     private TextView planBoard;
     private MyDBHandler dbHandler;
-    private String dateToEdit;
+    //private String dateToEdit;
     private SimpleDateFormat df;
+    private long planTimeInMillis;
+    private Calendar calendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,27 +52,33 @@ public class EditPlanActivity extends AppCompatActivity {
         }
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         Bundle getDateInfo = getIntent().getExtras();
+        calendar = Calendar.getInstance();
         if (getDateInfo == null){
-            dateToEdit = df.format(new Date());
+            calendar.setTime(new Date());
         }
         else{
-            dateToEdit = df.format(new Date(getDateInfo.getLong("dateToEdit")));
+            calendar.setTimeInMillis(getDateInfo.getLong("dateLong"));
         }
+
         addButton = findViewById(R.id.addButton);
         deleteButton = findViewById(R.id.deleteButton);
         showAllButton = findViewById(R.id.showAllButton);
         dateInput = findViewById(R.id.editDate);
         planInput = findViewById(R.id.editPlan);
         planBoard = findViewById(R.id.planBoard);
-        dbHandler = new MyDBHandler(this, null, null, 1);
-        showTodaysPlans();
-        dateInput.setText(dateToEdit);
+        dbHandler = new MyDBHandler(this, null, null, 2);
+        //showTodaysPlans();
+        //dateInput.setText(dateToEdit);
+        dateInput.setText(df.format(calendar.getTime()));
         addButton.setOnClickListener(
                 new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        Log.i("nothing", dateInput.getText().toString());
-                        Plans plan = new Plans(dateInput.getText().toString(), planInput.getText().toString());
+                        //Log.i("nothing", dateInput.getText().toString());
+                        planTimeInMillis = calendar.getTimeInMillis();
+                        Log.i("nodate", df.format(calendar.getTime()));
+                        Plans plan = new Plans(planTimeInMillis, 1, new Date().getTime(), "self", planInput.getText().toString(),
+                                0, 0, 0);
                         dbHandler.addPlan(plan);
                         showTodaysPlans();
                     }
@@ -102,7 +111,10 @@ public class EditPlanActivity extends AppCompatActivity {
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
                         if (hasFocus){
-                            showDatePickerDialog();
+                            calendar = showDatePickerDialog();
+                            Log.i("calendar", "on focus change " + df.format(calendar.getTime()));
+                            //planTimeInMillis = calendar.getTimeInMillis();
+
                         }
                     }
                 }
@@ -111,23 +123,19 @@ public class EditPlanActivity extends AppCompatActivity {
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        showDatePickerDialog();
+                        calendar = showDatePickerDialog();
+                        Log.i("calendar", "on click " + df.format(calendar.getTime()));
+
                     }
                 }
         );
 
     }
 
-    /**
-     * Today I will simply test the function
-     * further function, such show that particular day's plan will be added tomorrow
-     * may be the day after tomorrow?
-     * Alec Chen 20.4.2018 19:08
-     * I am really a fucking working-hard boy, ah?
-     */
     public void showTodaysPlans(){
-        String todaysPlans = dbHandler.getDatePlans(dateToEdit);
-        planBoard.setText(todaysPlans);
+        String plans;
+        plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),calendar.getTimeInMillis()+24*3600*1000);
+        planBoard.setText(plans);
         planInput.setText("");
     }
     public void showAllPlans(){
@@ -135,14 +143,20 @@ public class EditPlanActivity extends AppCompatActivity {
         planBoard.setText(allPlans);
     }
 
-    private void showDatePickerDialog() {
-        Calendar c = Calendar.getInstance();
+
+    private Calendar showDatePickerDialog() {
+        final Calendar ca = Calendar.getInstance();
         new DatePickerDialog(EditPlanActivity.this, new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 // TODO Auto-generated method stub
+
+                calendar.set(year, monthOfYear, dayOfMonth);
+                //Log.i("calendar", df.format(ca.getTime()));
+
                 String stringMon, stringDay;
+                //Log.i("calendar", "those ints " + Integer.toString(dayOfMonth));
                 if (monthOfYear+1 < 10){
                     stringMon = "0" + Integer.toString(monthOfYear+1);
                 }
@@ -155,9 +169,11 @@ public class EditPlanActivity extends AppCompatActivity {
                 else{
                     stringDay = Integer.toString(dayOfMonth);
                 }
-                dateInput.setText(year+"/"+stringMon+"/"+stringDay);
+                //dateInput.setText(year+"/"+stringMon+"/"+stringDay);
+                dateInput.setText(df.format(calendar.getTime()));
             }
-        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+        }, ca.get(Calendar.YEAR), ca.get(Calendar.MONTH), ca.get(Calendar.DAY_OF_MONTH)).show();
+        return ca;
 
     }
 
