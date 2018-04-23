@@ -83,6 +83,7 @@ GestureDetector.OnDoubleTapListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i("testActivity", "onCreate");
         setContentView(R.layout.activity_fullscreen);
 
 
@@ -105,11 +106,9 @@ GestureDetector.OnDoubleTapListener{
         /*After creating the interface, we can add some other function
         This way make the app show faster.
          */
-
         dbHandler = new MyDBHandler(this, null, null, 1);
-
-
-
+        this.gestureDetector = new GestureDetectorCompat(this, this);
+        gestureDetector.setOnDoubleTapListener(this);
         /*
          * In the future this service might connect to the internet and fetch
          * the information, such as class arrangement
@@ -120,13 +119,7 @@ GestureDetector.OnDoubleTapListener{
         bindService(serviceIntent, myNewConnection, Context.BIND_AUTO_CREATE);
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         /*Then the service started, but it take time to start, so we'd better not using its service in onCreate*/
-
-
-
         plansText = findViewById(R.id.plansText);
-        this.gestureDetector = new GestureDetectorCompat(this, this);
-        gestureDetector.setOnDoubleTapListener(this);
-
 
         TextView dateToday = findViewById(R.id.showDate);
         String todayInfo = this.getString(R.string.todayInfo) + df.format(new Date());
@@ -142,19 +135,21 @@ GestureDetector.OnDoubleTapListener{
 
         //Log.i("receivedDate", df.format(receivedDate));
 
-
+        /*
         if (level == Level.DAY) {
             showPlans(df.format(receivedDate));
         } else if (level == Level.WEEK){
             showPlans(df.format(receivedDate), df.format(getNextWeek(receivedDate)));
         } else{
             showPlans(df.format(receivedDate), df.format(getNextMonth(receivedDate)));
-        }
+        }*/
 
     }
+
     @Override
     protected void onStart() {
         super.onStart();
+        Log.i("testActivity", "onStart");
         setTitle();
         Log.i("receivedDate", df.format(receivedDate));
         if (level == Level.DAY) {
@@ -166,6 +161,30 @@ GestureDetector.OnDoubleTapListener{
         }
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i("testActivity", "onDestroy");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i("testActivity", "onStop");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.i("testActivity", "onPause");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i("testActivity", "onResume");
+    }
 
     public Date getLastDay(Date givenDate){
         /*When given a date, we can get the previous date*/
@@ -209,7 +228,6 @@ GestureDetector.OnDoubleTapListener{
         ca.add(Calendar.MONTH, 1);
         return ca.getTime();
     }
-
 
     public void showTime(){
         String currentDate = myNewService.getCurrentDate();
@@ -304,14 +322,16 @@ GestureDetector.OnDoubleTapListener{
         startActivity(editActivity);
     }
 
+    /**
+     * we can define a min move length and a min move velocity to decrease miss taken.
+     * Alec Chen
+     */
+    /*
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 
 
-        /**
-         * we can define a min move length and a min move velocity to decrease miss taken.
-         * Alec Chen
-         */
+
         double minDistance = 120.0;
         //testMessage.setText("onFling");
 
@@ -319,7 +339,6 @@ GestureDetector.OnDoubleTapListener{
         float moveY = e1.getY(0) - e2.getY(0);
 
         //Calculate the direction user's finger fling, if its horizontal: Flag = 1, else, Flag = 0
-
 
         //I hope there is a faster way to calculate this, though it may not important.
         // Alec Chen 2018 4 4 21.04
@@ -381,7 +400,98 @@ GestureDetector.OnDoubleTapListener{
         }
 
         return true;
+    }*/
+
+
+    /**
+     * Modified method, hope to call onStart() or other function
+     * including animation such as slide, but no other activity
+     * since the app seems unstable if we create it too much
+     * @param e1
+     * @param e2
+     * @param velocityX
+     * @param velocityY
+     * @return
+     */
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+
+        double minDistance = 120.0;
+        float moveX = e1.getX(0) - e2.getX(0);
+        float moveY = e1.getY(0) - e2.getY(0);
+
+        //Calculate the direction user's finger fling, if its horizontal: Flag = 1, else, Flag = 0
+
+        double absX = abs(moveX);
+        double absY = abs(moveY);
+        Intent anotherDay = new Intent();
+        anotherDay.setClass(FullscreenActivity.this, FullscreenActivity.class);
+
+        while (absX > minDistance || absY > minDistance) {
+            if (absX > absY) {
+                if (moveX > 0) {
+                    //anotherDay.putExtra("dateInfo", "Tomorrow");
+                    Date tempDate;
+                    if (level == Level.DAY) {
+                        tempDate = getNextDay(receivedDate);
+                    } else if (level == Level.WEEK) {
+                        tempDate = getNextWeek(receivedDate);
+                    } else {
+                        tempDate = getNextMonth(receivedDate);
+                    }
+                    receivedDate = tempDate;
+//                    anotherDay.putExtra("dateLong", tempDate.getTime());
+//                    anotherDay.putExtra("level", level.ordinal());
+//                    startActivity(anotherDay);
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
+                    break;
+                } else {
+                    //anotherDay.putExtra("dateInfo", "Yesterday");
+                    Date tempDate;
+                    if (level == Level.DAY) {
+                        tempDate = getLastDay(receivedDate);
+                    } else if (level == Level.WEEK) {
+                        tempDate = getLastWeek(receivedDate);
+                    } else {
+                        tempDate = getLastMonth(receivedDate);
+                    }
+                    receivedDate = tempDate;
+//                    anotherDay.putExtra("dateLong", tempDate.getTime());
+//                    anotherDay.putExtra("level", level.ordinal());
+//                    startActivity(anotherDay);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
+                    break;
+                }
+            }
+            //Math.abs(level.ordinal()+2)%3 = Math.abs(level.ordinal()-1)%3
+            //Alec Chen
+            if (moveY > 0) {
+                //anotherDay.putExtra("dateInfo", "Level Down");
+//                anotherDay.putExtra("dateLong", receivedDate.getTime());
+//                anotherDay.putExtra("level", Math.abs(level.ordinal() + 2) % 3);
+//                startActivity(anotherDay);
+                level = Level.values()[Math.abs(level.ordinal()+2)%3];
+                overridePendingTransition(R.anim.go_up, R.anim.go_up);
+                break;
+            }
+            //anotherDay.putExtra("dateInfo", "Level Up");
+//            anotherDay.putExtra("dateLong", receivedDate.getTime());
+//            anotherDay.putExtra("level", Math.abs(level.ordinal() + 4) % 3);
+//            startActivity(anotherDay);
+            level = Level.values()[Math.abs(level.ordinal()+4)%3];
+            overridePendingTransition(R.anim.go_down, R.anim.go_down);
+            break;
+        }
+        Log.i("newType", "before onStart");
+        onStart();
+        Log.i("newType", "after onStart");
+        return true;
+
     }
+
+
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         this.gestureDetector.onTouchEvent(event);
