@@ -311,7 +311,9 @@ GestureDetector.OnDoubleTapListener{
     public void onLongPress(MotionEvent e) {
         //testMessage.setText("onLongPress");
         Intent editActivity = new Intent(FullscreenActivity.this, EditPlanActivity.class);
+        Log.i("spinner", "go here??");
         editActivity.putExtra("dateLong", calendar.getTimeInMillis());
+        Log.i("spinner", "go heresdggdfgdfg??");
         startActivity(editActivity);
     }
 
@@ -344,13 +346,8 @@ GestureDetector.OnDoubleTapListener{
         while (absX > minDistance || absY > minDistance) {
             if (absX > absY) {
                 if (moveX > 0) {
-                    Log.i("why", "here0");
-                    //anotherDay.putExtra("dateInfo", "Tomorrow");
-                    //Date tempDate;
                     if (level == Level.DAY) {
-                        Log.i("why", "before add 1 " + df.format(calendar.getTime()));
                         calendar.add(Calendar.DATE, 1);
-                        Log.i("why", "before sub 1 " + df.format(calendar.getTime()));
                     } else if (level == Level.WEEK) {
                         calendar.add(Calendar.WEEK_OF_YEAR, 1);
                     } else {
@@ -358,12 +355,8 @@ GestureDetector.OnDoubleTapListener{
                     }
                     break;
                 } else {
-                    //anotherDay.putExtra("dateInfo", "Yesterday");
-                    //Date tempDate;
-                    Log.i("why", "here1");
                     if (level == Level.DAY) {
                         calendar.add(Calendar.DATE, -1);
-                        Log.i("why", "here2");
                     } else if (level == Level.WEEK) {
                         calendar.add(Calendar.WEEK_OF_YEAR, -1);
                     } else {

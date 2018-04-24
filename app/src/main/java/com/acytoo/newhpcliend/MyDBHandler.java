@@ -114,7 +114,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
 
     /**
      * Following method will return all the plans in a String for me to test the
-     * databas and will not be used in the matured app
+     * database and will not be used in the matured app
      * Alec Chen 20 4 2018 17:03
      * I am hungry ...
      */
@@ -144,9 +144,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
         String datePlans = "";
         SQLiteDatabase db = getWritableDatabase();
         long tomorrow = today + 24 * 3600 * 1000;
-        /*
-        String query = "SELECT " + COLUMN_TODOS + " FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME + " = ?;";
-        Cursor c = db.rawQuery(query, new String[]{dateString});*/
         String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME + " >= " + today + " AND "
                 + COLUMN_PLAN_TIME + " < " + tomorrow +
                 " ORDER BY "+ COLUMN_PLAN_TIME + " ASC;";

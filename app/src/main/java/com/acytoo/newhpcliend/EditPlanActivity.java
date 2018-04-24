@@ -1,18 +1,26 @@
 package com.acytoo.newhpcliend;
 
 import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -24,15 +32,28 @@ public class EditPlanActivity extends AppCompatActivity {
 
     private EditText dateInput;
     private EditText planInput;
+    private EditText timeInput;
     private Button addButton;
     private Button deleteButton;
     private Button showAllButton;
     private TextView planBoard;
+    private Spinner prioritySpinner;
     private MyDBHandler dbHandler;
-    //private String dateToEdit;
     private SimpleDateFormat df;
+    private SimpleDateFormat timedf;
     private long planTimeInMillis;
     private Calendar calendar;
+    private int planPriority;
+    private Switch doneSwitch;
+    private Switch autoDeleteSwitch;
+    enum DoneFlag {
+        False, True
+    }
+    enum AutoDeleteFlag {
+        False, True
+    }
+    private DoneFlag done;
+    private AutoDeleteFlag autoDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +71,9 @@ public class EditPlanActivity extends AppCompatActivity {
                 actionBar.hide();
             }
         }
+
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
+        timedf = new SimpleDateFormat("h:mm a", Locale.CHINA);
         Bundle getDateInfo = getIntent().getExtras();
         calendar = Calendar.getInstance();
         if (getDateInfo == null){
@@ -59,28 +82,59 @@ public class EditPlanActivity extends AppCompatActivity {
         else{
             calendar.setTimeInMillis(getDateInfo.getLong("dateLong"));
         }
+        planPriority = 0;
+        done = DoneFlag.False;
+        autoDelete = AutoDeleteFlag.False;
 
         addButton = findViewById(R.id.addButton);
         deleteButton = findViewById(R.id.deleteButton);
         showAllButton = findViewById(R.id.showAllButton);
         dateInput = findViewById(R.id.editDate);
         planInput = findViewById(R.id.editPlan);
+        timeInput = findViewById(R.id.editTime);
         planBoard = findViewById(R.id.planBoard);
+        doneSwitch = findViewById(R.id.doneSwitch);
+        autoDeleteSwitch = findViewById(R.id.autoDeleteSwitch);
         dbHandler = new MyDBHandler(this, null, null, 2);
-        //showTodaysPlans();
-        //dateInput.setText(dateToEdit);
         dateInput.setText(df.format(calendar.getTime()));
+        timeInput.setText(timedf.format(calendar.getTime()));
+        prioritySpinner = findViewById(R.id.prioritySpinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.priority_items, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        prioritySpinner.setAdapter(adapter);
+
+        prioritySpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        planPriority = position;
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {
+
+                    }
+                }
+        );
+
         addButton.setOnClickListener(
                 new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        //Log.i("nothing", dateInput.getText().toString());
-                        planTimeInMillis = calendar.getTimeInMillis();
-                        Log.i("nodate", df.format(calendar.getTime()));
-                        Plans plan = new Plans(planTimeInMillis, 1, new Date().getTime(), "self", planInput.getText().toString(),
-                                0, 0, 0);
-                        dbHandler.addPlan(plan);
-                        showTodaysPlans();
+                        Log.i("legal", "In the method " + planInput.getText().toString());
+                        if (legal()){
+                            Log.i("legal", "In the method " + planInput.getText().toString());
+                            planTimeInMillis = calendar.getTimeInMillis();
+                            Plans plan = new Plans(planTimeInMillis, planPriority, new Date().getTime(), "self",
+                                    planInput.getText().toString(),
+                                    done.ordinal(), autoDelete.ordinal(), 0);
+                            dbHandler.addPlan(plan);
+                            showTodaysPlans();
+                        }
+                        else {
+                            planInput.setText("Please enter your plan here");
+                        }
                     }
                 }
         );
@@ -103,7 +157,6 @@ public class EditPlanActivity extends AppCompatActivity {
                     }
                 }
         );
-        //Finish the listener for buttons
 
         dateInput.setInputType(InputType.TYPE_NULL);
         dateInput.setOnFocusChangeListener(
@@ -111,10 +164,7 @@ public class EditPlanActivity extends AppCompatActivity {
                     @Override
                     public void onFocusChange(View v, boolean hasFocus) {
                         if (hasFocus){
-                            calendar = showDatePickerDialog();
-                            Log.i("calendar", "on focus change " + df.format(calendar.getTime()));
-                            //planTimeInMillis = calendar.getTimeInMillis();
-
+                            showDatePickerDialog();
                         }
                     }
                 }
@@ -123,12 +173,61 @@ public class EditPlanActivity extends AppCompatActivity {
                 new View.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        calendar = showDatePickerDialog();
-                        Log.i("calendar", "on click " + df.format(calendar.getTime()));
+                        showDatePickerDialog();
 
                     }
                 }
         );
+
+        timeInput.setInputType(InputType.TYPE_NULL);
+        timeInput.setOnFocusChangeListener(
+                new View.OnFocusChangeListener(){
+                    @Override
+                    public void onFocusChange(View v, boolean hasFocus) {
+                        if (hasFocus){
+                            showTimePickerDialog();
+                        }
+                    }
+                }
+        );
+        timeInput.setOnClickListener(
+                new View.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        showTimePickerDialog();
+                    }
+                }
+        );
+
+        doneSwitch.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked){
+                            done = DoneFlag.True;
+                        }
+                        else{
+                            done = DoneFlag.False;
+                        }
+                    }
+                }
+        );
+
+        autoDeleteSwitch.setOnCheckedChangeListener(
+                new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        if (isChecked){
+                            autoDelete = AutoDeleteFlag.True;
+                        }
+                        else{
+                            autoDelete = AutoDeleteFlag.False;
+                        }
+                    }
+                }
+        );
+
+
 
     }
 
@@ -142,38 +241,39 @@ public class EditPlanActivity extends AppCompatActivity {
         String allPlans = dbHandler.databaseToString();
         planBoard.setText(allPlans);
     }
-
-
-    private Calendar showDatePickerDialog() {
+    private void showDatePickerDialog() {
         final Calendar ca = Calendar.getInstance();
         new DatePickerDialog(EditPlanActivity.this, new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 // TODO Auto-generated method stub
-
                 calendar.set(year, monthOfYear, dayOfMonth);
-                //Log.i("calendar", df.format(ca.getTime()));
-
-                String stringMon, stringDay;
-                //Log.i("calendar", "those ints " + Integer.toString(dayOfMonth));
-                if (monthOfYear+1 < 10){
-                    stringMon = "0" + Integer.toString(monthOfYear+1);
-                }
-                else{
-                    stringMon = Integer.toString(monthOfYear+1);
-                }
-                if (dayOfMonth < 10){
-                    stringDay = "0" + Integer.toString(dayOfMonth);
-                }
-                else{
-                    stringDay = Integer.toString(dayOfMonth);
-                }
-                //dateInput.setText(year+"/"+stringMon+"/"+stringDay);
                 dateInput.setText(df.format(calendar.getTime()));
             }
         }, ca.get(Calendar.YEAR), ca.get(Calendar.MONTH), ca.get(Calendar.DAY_OF_MONTH)).show();
-        return ca;
+    }
+
+    private void showTimePickerDialog(){
+        final Calendar ca = Calendar.getInstance();
+        int hour = ca.get(Calendar.HOUR_OF_DAY);
+        int minute = ca.get(Calendar.MINUTE);
+
+        new TimePickerDialog(EditPlanActivity.this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+                calendar.set(Calendar.SECOND, 0);
+                calendar.set(Calendar.MILLISECOND, 0);
+                timeInput.setText(timedf.format(calendar.getTime()));
+            }
+        },hour,minute,false).show();
+    }
+
+    private boolean legal(){
+        Log.i("legal", planInput.getText().toString());
+        return (planInput.getText() != null);
 
     }
 
