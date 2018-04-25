@@ -116,7 +116,6 @@ GestureDetector.OnDoubleTapListener{
         dateToday = findViewById(R.id.showDate);
         calendar = Calendar.getInstance();
         caForEnd = Calendar.getInstance();
-        /*肏你妈的傻逼浅拷贝， 不知道是哪个傻逼想出来的智障东西*/
         calendar.setTime(new Date());
         calendar.setTimeZone(TimeZone.getDefault());    //get your TimeZone
         calendar.set(Calendar.MILLISECOND, 0);  //We need to set the millisecond to 0
@@ -124,12 +123,7 @@ GestureDetector.OnDoubleTapListener{
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         level = Level.DAY;
-//        SimpleDateFormat dfTest = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z", Locale.CHINA);
-//        Log.i("calInfo", dfTest.format(calendar.getTime()));
-//        calendar.add(Calendar.DATE, 1);
-//
-//        Calendar newcal = calendar;
-//        Log.i("calInfo", dfTest.format(calendar.getTime()));
+
     }
 
     @Override
@@ -174,40 +168,6 @@ GestureDetector.OnDoubleTapListener{
         super.onResume();
         Log.i("testActivity", "onResume");
     }
-
-/*
-    public Calendar getLastDay(Calendar calendar){
-        caForEnd.setTimeInMillis(calendar.getTimeInMillis());
-        caForEnd.add(Calendar.DATE, -1);
-        return caForEnd;
-    }
-    public Calendar getNextDay(Calendar calendar){
-        caForEnd.setTimeInMillis(calendar.getTimeInMillis());
-        Log.i("why", "before In Next " + df.format(calendar.getTime()));
-        caForEnd.add(Calendar.DATE, 1);
-        Log.i("why", "after In Next " + df.format(calendar.getTime()));
-        return caForEnd;
-    }
-    public Calendar getLastWeek(Calendar calendar){
-        caForEnd.setTimeInMillis(calendar.getTimeInMillis());
-        caForEnd.add(Calendar.WEEK_OF_YEAR, -1);
-        return caForEnd;
-    }
-    public Calendar getNextWeek(Calendar calendar){
-        caForEnd.setTimeInMillis(calendar.getTimeInMillis());
-        caForEnd.add(Calendar.WEEK_OF_YEAR, 1);
-        return caForEnd;
-    }
-    public Calendar getLastMonth(Calendar calendar){
-        caForEnd.setTimeInMillis(calendar.getTimeInMillis());
-        caForEnd.add(Calendar.MONTH, -1);
-        return caForEnd;
-    }
-    public Calendar getNextMonth(Calendar calendar){
-        caForEnd.setTimeInMillis(calendar.getTimeInMillis());
-        caForEnd.add(Calendar.MONTH, 1);
-        return caForEnd;
-    }*/
 
 
     public long getLastDayMillis(long givenMillis){
@@ -275,12 +235,27 @@ GestureDetector.OnDoubleTapListener{
         return true;
     }
 
+    /**
+     * When double click on the main screen, we will go to setting activity,
+     * and login will be an item in setting
+     *
+     * Alec Chen
+     * 25/4/2018
+     * @param e
+     * @return
+     */
     @Override
     public boolean onDoubleTapEvent(MotionEvent e) {
         //testMessage.setText("onDoubleTapEvent");
+
+        /*
         Intent loginActivity = new Intent();
         loginActivity.setClass(FullscreenActivity.this, LoginActivity.class);
-        startActivity(loginActivity);
+        startActivity(loginActivity);*/
+
+        Intent settingActivity = new Intent();
+        settingActivity.setClass(FullscreenActivity.this, SettingsActivity.class);
+        startActivity(settingActivity);
         return true;
     }
 

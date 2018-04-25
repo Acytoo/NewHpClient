@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- To connect to the internet -->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -40,7 +41,11 @@
             android:exported="true"
             android:launchMode="singleInstance" />
 
-        <activity android:name=".EditPlanActivity"></activity>
+        <activity android:name=".EditPlanActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:launchMode="singleInstance"></activity>
     </application>
 
 </manifest>
