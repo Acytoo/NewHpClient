@@ -1,14 +1,20 @@
 package com.acytoo.newhpcliend;
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -124,6 +130,19 @@ GestureDetector.OnDoubleTapListener{
         calendar.set(Calendar.SECOND, 0);
         level = Level.DAY;
 
+        /*
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification.Builder builder=new Notification.Builder(this);
+        Intent intent=new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.github.com/acytoo"));
+        PendingIntent pendingIntent= PendingIntent.getActivity(this,0,intent,0);
+
+        builder.setContentIntent(pendingIntent);
+        builder.setSmallIcon(R.mipmap.ic_launcher);
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher));
+        builder.setAutoCancel(true);
+        builder.setContentTitle("此处贴出优先级最高的未完成任务");
+        mNotificationManager.notify(1, builder.build());*/
+
     }
 
     @Override
@@ -142,6 +161,24 @@ GestureDetector.OnDoubleTapListener{
             plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),getNextMonthMillis(calendar.getTimeInMillis()));
         }
         plansText.setText(plans);
+        showNotification();
+    }
+
+
+
+
+    private void showNotification() {
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, FullscreenActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, null)
+                .setContentTitle("今日日程")
+                .setContentText("显示今日优先级最高的日程")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .setContentIntent(pendingIntent);
+        Notification notification = builder.build();
+        NotificationManager manager =(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(1,notification);
     }
 
 
