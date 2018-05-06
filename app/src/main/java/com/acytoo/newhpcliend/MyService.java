@@ -29,8 +29,15 @@ public class MyService extends Service {
 
     }
 
+    /**
+     * in this class, we return the internet service
+     * @return
+     */
+
     public String getCurrentDate(){
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         return df.format(new Date());
     }
+
+
 }

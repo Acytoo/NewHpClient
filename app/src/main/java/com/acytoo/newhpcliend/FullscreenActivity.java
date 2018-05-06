@@ -203,9 +203,6 @@ GestureDetector.OnDoubleTapListener{
     }
 
 
-
-
-
     public void setTitle(){
         TextView dateToShow = findViewById(R.id.dateToShow);
         String dateOfShowingPlans;

@@ -127,7 +127,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
         //Move the cursor to the first row in your database
         c.moveToFirst();
         while (!c.isAfterLast()){
-            if (c.getString(c.getColumnIndex(COLUMN_PLAN_TIME)) != null){
+            if (c.getString(c.getColumnIndex(COLUMN_TODOS)) != null){
                 Calendar ncalendar = Calendar.getInstance();
                 SimpleDateFormat ndf = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
                 ncalendar.setTimeInMillis(c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)));
@@ -182,6 +182,29 @@ public class MyDBHandler extends SQLiteOpenHelper{
         c.close();      //Close the cursor and the database
         db.close();
         return dbString;
+    }
+
+    /**
+     * This method can auto delete the expired plan, I will find the expired plans first
+     * than I can delete them.
+     * Only the plans that are done and set to auto delete, we can delete the plan, no matter its priority
+     *
+     */
+    public void autoDelete(){
+        SQLiteDatabase db = getWritableDatabase();
+        long pastTime = new Date().getTime() - 30*24*3600*1000; //This won't overflow!!!
+        String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME + " <= " +
+                pastTime;
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        while (!c.isAfterLast()){
+            if (c.getInt(c.getColumnIndex(COLUMN_AUTO_DELETE)) == 1 && c.getInt(c.getColumnIndex(COLUMN_DONE)) == 1){
+                db.execSQL("DELETE FROM " + TABLE_PLANS + " WHERE " + COLUMN_ID + "=\"" + c.getInt(c.getColumnIndex(COLUMN_ID)) + "\";" );
+            }
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
     }
 
 

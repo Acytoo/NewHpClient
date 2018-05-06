@@ -46,6 +46,7 @@ public class EditPlanActivity extends AppCompatActivity {
     private int planPriority;
     private Switch doneSwitch;
     private Switch autoDeleteSwitch;
+    private Button autoDeleteButton;
     enum DoneFlag {
         False, True
     }
@@ -55,11 +56,17 @@ public class EditPlanActivity extends AppCompatActivity {
     private DoneFlag done;
     private AutoDeleteFlag autoDelete;
 
+    /**
+     * in future, autoDelete method can be put in onStart(), so we don't need
+     * to call it manually.
+     *
+     * @param savedInstanceState
+     */
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_plan);
-
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -95,6 +102,8 @@ public class EditPlanActivity extends AppCompatActivity {
         planBoard = findViewById(R.id.planBoard);
         doneSwitch = findViewById(R.id.doneSwitch);
         autoDeleteSwitch = findViewById(R.id.autoDeleteSwitch);
+        autoDeleteButton = findViewById(R.id.autoDeleteButton);
+
         dbHandler = new MyDBHandler(this, null, null, 2);
         dateInput.setText(df.format(calendar.getTime()));
         timeInput.setText(timedf.format(calendar.getTime()));
@@ -122,9 +131,7 @@ public class EditPlanActivity extends AppCompatActivity {
                 new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        Log.i("legal", "In the method " + planInput.getText().toString());
                         if (legal()){
-                            Log.i("legal", "In the method " + planInput.getText().toString());
                             planTimeInMillis = calendar.getTimeInMillis();
                             Plans plan = new Plans(planTimeInMillis, planPriority, new Date().getTime(), "self",
                                     planInput.getText().toString(),
@@ -227,6 +234,15 @@ public class EditPlanActivity extends AppCompatActivity {
                 }
         );
 
+        autoDeleteButton.setOnClickListener(
+                new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        dbHandler.autoDelete();
+                    }
+                }
+        );
+
 
 
     }
@@ -258,7 +274,6 @@ public class EditPlanActivity extends AppCompatActivity {
         final Calendar ca = Calendar.getInstance();
         int hour = ca.get(Calendar.HOUR_OF_DAY);
         int minute = ca.get(Calendar.MINUTE);
-
         new TimePickerDialog(EditPlanActivity.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
@@ -272,7 +287,6 @@ public class EditPlanActivity extends AppCompatActivity {
     }
 
     private boolean legal(){
-        Log.i("legal", planInput.getText().toString());
         return (planInput.getText() != null);
 
     }
