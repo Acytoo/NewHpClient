@@ -53,7 +53,9 @@ import static java.lang.StrictMath.abs;
  * So this app will get tht current date on onStart(), then the date is s very important parameter,
  * I can calculate the date I will display using this date.
  * Alec Chen 21.4.2018 13:40
- * 我他妈的就是天才， 就是， 其他的我都不听
+ * 显示的信息以listview的形式展示出来， 方便检测点击的是哪个项目
+ *
+ * 单击为修改， 以及查看详细（详细包括优先级， 闹钟，自动删除， 来源）
  *
  * 除了显示， 其他部分都是使用long类型表示
  *
