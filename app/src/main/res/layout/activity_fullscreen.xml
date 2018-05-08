@@ -8,74 +8,79 @@
     tools:context=".FullscreenActivity">
 
 
-
     <TextView
         android:id="@+id/showDate"
-        android:layout_width="match_parent"
+        android:layout_width="92dp"
         android:layout_height="27dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:textColor="#99ff99"
         android:gravity="center"
-        android:text="Date today"
+        android:text="27/10/1997"
+        android:textColor="#99ff99"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.055"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintVertical_bias="0.017" />
 
     <TextView
         android:id="@+id/dateToShow"
-        android:layout_width="match_parent"
-        android:layout_height="65dp"
+        android:layout_width="229dp"
+        android:layout_height="27dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="8dp"
-        android:gravity="bottom|center"
-        android:text="day of showing plans"
+        android:gravity="center"
+        android:text="27/10/1997 - 27/10/2015"
         android:textColor="#99ff99"
-        android:textSize="17sp"
-        android:textStyle="bold"
+        android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.123" />
+        app:layout_constraintVertical_bias="0.017" />
 
-    <!--TextView
-        android:id="@+id/fullscreen_content"
-        android:layout_width="match_parent"
-        android:layout_height="194dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:gravity="center"
-        android:text="@string/all_plans"
-        android:textSize="15sp"
-        android:textColor="#99ff99"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintVertical_bias="0.297" /-->
 
     <TextView
         android:id="@+id/plansText"
         android:layout_width="match_parent"
-        android:layout_height="380dp"
-        android:layout_marginTop="136dp"
+        android:layout_height="449dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="52dp"
         android:gravity="center"
         android:keepScreenOn="true"
         android:text="plans"
         android:textColor="#99ff99"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <LinearLayout
+        android:layout_width="351dp"
+        android:layout_height="452dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.529"
+        app:layout_constraintStart_toStartOf="@+id/plansText"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0">
+
+        <android.support.v7.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recyclerv_view"/>
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>

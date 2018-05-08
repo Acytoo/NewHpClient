@@ -9,9 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
@@ -20,6 +18,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -27,6 +27,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -72,6 +73,11 @@ GestureDetector.OnDoubleTapListener{
     private Calendar caForEnd;
     private TextView dateToday;
     private Level level;
+    private Context mContext;
+
+    private ArrayList<String> mPlans = new ArrayList<>();
+    private ArrayList<String> mImageUrls = new ArrayList<>();
+
     public enum Level{
         DAY, WEEK, MONTH
     }
@@ -101,6 +107,7 @@ GestureDetector.OnDoubleTapListener{
         Log.i("testActivity", "onCreate");
         setContentView(R.layout.activity_fullscreen);
         init();
+        initPlans();
     }
     private void init(){
         if (Build.VERSION.SDK_INT >= 21) {
@@ -114,6 +121,7 @@ GestureDetector.OnDoubleTapListener{
                 actionBar.hide();
             }
         }
+        mContext = this;
         dbHandler = new MyDBHandler(this, null, null, 2);
         this.gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
@@ -132,19 +140,30 @@ GestureDetector.OnDoubleTapListener{
         calendar.set(Calendar.SECOND, 0);
         level = Level.DAY;
 
-        /*
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        Notification.Builder builder=new Notification.Builder(this);
-        Intent intent=new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.github.com/acytoo"));
-        PendingIntent pendingIntent= PendingIntent.getActivity(this,0,intent,0);
 
-        builder.setContentIntent(pendingIntent);
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(),R.mipmap.ic_launcher));
-        builder.setAutoCancel(true);
-        builder.setContentTitle("此处贴出优先级最高的未完成任务");
-        mNotificationManager.notify(1, builder.build());*/
 
+    }
+
+
+    public void initPlans(){
+        mImageUrls.add("../res/mipmap/priority_0.png");
+        mPlans.add("Kill some assholes");
+
+        mImageUrls.add("https://i.redd.it/tpsnoz5bzo501.jpg");
+        mPlans.add("eat some girls");
+
+        mImageUrls.add("https://i.redd.it/qn7f9oqu7o501.jpg");
+        mPlans.add("may be do some homework");
+
+        mImageUrls.add("https://i.redd.it/j6myfqglup501.jpg");
+        mPlans.add("have a nice dream");
+        initRecyclerView();
+    }
+    private void initRecyclerView(){
+        RecyclerView recyclerView = findViewById(R.id.recyclerv_view);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mPlans, mImageUrls);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
@@ -307,6 +326,8 @@ GestureDetector.OnDoubleTapListener{
 
     }
 
+
+
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         return true;
@@ -322,9 +343,7 @@ GestureDetector.OnDoubleTapListener{
     public void onLongPress(MotionEvent e) {
         //testMessage.setText("onLongPress");
         Intent editActivity = new Intent(FullscreenActivity.this, EditPlanActivity.class);
-        Log.i("spinner", "go here??");
         editActivity.putExtra("dateLong", calendar.getTimeInMillis());
-        Log.i("spinner", "go heresdggdfgdfg??");
         startActivity(editActivity);
     }
 
