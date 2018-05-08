@@ -61,7 +61,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <!--LinearLayout
         android:layout_width="351dp"
         android:layout_height="452dp"
         android:layout_marginBottom="8dp"
@@ -80,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/recyclerv_view"/>
-    </LinearLayout>
+    </LinearLayout-->
 
 
 </android.support.constraint.ConstraintLayout>

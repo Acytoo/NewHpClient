@@ -18,8 +18,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -27,7 +25,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -70,13 +67,9 @@ GestureDetector.OnDoubleTapListener{
     private TextView plansText;
     private SimpleDateFormat df;
     private Calendar calendar;
-    private Calendar caForEnd;
+    private static Calendar caForEnd;
     private TextView dateToday;
     private Level level;
-    private Context mContext;
-
-    private ArrayList<String> mPlans = new ArrayList<>();
-    private ArrayList<String> mImageUrls = new ArrayList<>();
 
     public enum Level{
         DAY, WEEK, MONTH
@@ -107,7 +100,7 @@ GestureDetector.OnDoubleTapListener{
         Log.i("testActivity", "onCreate");
         setContentView(R.layout.activity_fullscreen);
         init();
-        initPlans();
+
     }
     private void init(){
         if (Build.VERSION.SDK_INT >= 21) {
@@ -121,7 +114,6 @@ GestureDetector.OnDoubleTapListener{
                 actionBar.hide();
             }
         }
-        mContext = this;
         dbHandler = new MyDBHandler(this, null, null, 2);
         this.gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
@@ -145,31 +137,14 @@ GestureDetector.OnDoubleTapListener{
     }
 
 
-    public void initPlans(){
-        mImageUrls.add("../res/mipmap/priority_0.png");
-        mPlans.add("Kill some assholes");
 
-        mImageUrls.add("https://i.redd.it/tpsnoz5bzo501.jpg");
-        mPlans.add("eat some girls");
 
-        mImageUrls.add("https://i.redd.it/qn7f9oqu7o501.jpg");
-        mPlans.add("may be do some homework");
-
-        mImageUrls.add("https://i.redd.it/j6myfqglup501.jpg");
-        mPlans.add("have a nice dream");
-        initRecyclerView();
-    }
-    private void initRecyclerView(){
-        RecyclerView recyclerView = findViewById(R.id.recyclerv_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mPlans, mImageUrls);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        String todayInfo = this.getString(R.string.todayInfo) + " " + df.format(new Date());
+        //String todayInfo = this.getString(R.string.todayInfo) + " " + df.format(new Date());
+        String todayInfo = df.format(new Date());
         dateToday.setText(todayInfo);
         Log.i("testActivity", "onStart");
         setTitle();
@@ -228,33 +203,32 @@ GestureDetector.OnDoubleTapListener{
     }
 
 
-    public long getLastDayMillis(long givenMillis){
+    public static long getLastDayMillis(long givenMillis){
         caForEnd.setTimeInMillis(givenMillis);
         caForEnd.add(Calendar.DATE, -1);
         return caForEnd.getTimeInMillis();
     }
-    public long getNextDayMillis(long givenMillis){
-
+    public static long getNextDayMillis(long givenMillis){
         caForEnd.setTimeInMillis(givenMillis);
         caForEnd.add(Calendar.DATE, 1);
         return caForEnd.getTimeInMillis();
     }
-    public long getLastWeekMillis(long givenMillis){
+    public static long getLastWeekMillis(long givenMillis){
         caForEnd.setTimeInMillis(givenMillis);
         caForEnd.add(Calendar.WEEK_OF_YEAR, -1);
         return caForEnd.getTimeInMillis();
     }
-    public long getNextWeekMillis(long givenMillis){
+    public static long getNextWeekMillis(long givenMillis){
         caForEnd.setTimeInMillis(givenMillis);
         caForEnd.add(Calendar.WEEK_OF_YEAR, 1);
         return caForEnd.getTimeInMillis();
     }
-    public long getLastMonthMillis(long givenMillis){
+    public static long getLastMonthMillis(long givenMillis){
         caForEnd.setTimeInMillis(givenMillis);
         caForEnd.add(Calendar.MONTH, -1);
         return caForEnd.getTimeInMillis();
     }
-    public long getNextMonthMillis(long givenMillis){
+    public static long getNextMonthMillis(long givenMillis){
         caForEnd.setTimeInMillis(givenMillis);
         caForEnd.add(Calendar.MONTH, 1);
         return caForEnd.getTimeInMillis();
@@ -262,25 +236,39 @@ GestureDetector.OnDoubleTapListener{
 
 
     public void setTitle(){
+
         TextView dateToShow = findViewById(R.id.dateToShow);
         String dateOfShowingPlans;
         if (level == Level.DAY) {
             dateOfShowingPlans = df.format(calendar.getTime()) + this.getString(R.string.dateToShow);
         } else if (level == Level.WEEK){
-            dateOfShowingPlans = "Plans during week\n" + df.format(calendar.getTime());
+            //dateOfShowingPlans = "Plans during week\n" + df.format(calendar.getTime());
+            caForEnd.setTimeInMillis(getNextWeekMillis(calendar.getTimeInMillis()));
+            dateOfShowingPlans = df.format(calendar.getTime()) + " - " + df.format(caForEnd.getTime());
         } else {
-            dateOfShowingPlans = "Plans during month\n" + df.format(calendar.getTime());
+            //dateOfShowingPlans = "Plans during month\n" + df.format(calendar.getTime());
+            caForEnd.setTimeInMillis(getNextMonthMillis(calendar.getTimeInMillis()));
+            dateOfShowingPlans = df.format(calendar.getTime()) + " - " + df.format(caForEnd.getTime());
         }
         dateToShow.setText(dateOfShowingPlans);
     }
 
 
-
-
+    /**
+     * start the detailActivity, which show the plans of the given day in detail,
+     * and hold the entry of edit, delete, add.
+     * Alec Chen /08/05/2018
+     * @param e
+     * @return
+     */
 
     @Override
     public boolean onSingleTapConfirmed(MotionEvent e) {
-        //testMessage.setText("onSingleTapConfirmed");
+        Intent detailActivity = new Intent();
+        detailActivity.setClass(this, DetailActivity.class);
+        detailActivity.putExtra("level", level.ordinal());
+        detailActivity.putExtra("dateLong", calendar.getTimeInMillis());
+        startActivity(detailActivity);
         return true;
     }
 

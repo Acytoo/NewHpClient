@@ -8,6 +8,7 @@ import android.widget.RemoteViews;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+import static com.acytoo.newhpcliend.FullscreenActivity.getNextDayMillis;
 
 /**
  * 目前设想只支持一天的日程或课表， 不支持交互
@@ -63,12 +64,6 @@ public class NewAppWidget extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         // Enter relevant functionality for when the last widget is disabled
-    }
-    public static long getNextDayMillis(long givenMillis){
-
-        caForEnd.setTimeInMillis(givenMillis);
-        caForEnd.add(Calendar.DATE, 1);
-        return caForEnd.getTimeInMillis();
     }
 }
 

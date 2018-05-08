@@ -1,5 +1,6 @@
 package com.acytoo.newhpcliend;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -48,6 +49,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
 
+
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         Log.d(TAG, "onBindViewHolder: called.");
@@ -59,38 +63,20 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         holder.imageName.setText(mImageNames.get(position));
 
-
-        holder.parentLayout.setOnTouchListener(new MyGestureDetector(MyApplication.getInstance()){
-
+        holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick() {
-                super.onClick();
+            public void onClick(View view) {
+                Log.d(TAG, "onClick: clicked on: " + mImageNames.get(position));
 
-            }
+                Toast.makeText(mContext, mImageNames.get(position), Toast.LENGTH_SHORT).show();
 
-            @Override
-            public void onLongClick() {
-                super.onLongClick();
-
-
-            }
-
-            public void onSwipeTop() {
-
-            }
-
-            public void onSwipeRight() {
-
-            }
-
-            public void onSwipeLeft() {
-
-            }
-
-            public void onSwipeBottom() {
-
+                Intent intent = new Intent(mContext, EditPlanActivity.class);
+                //intent.putExtra("image_url", mImages.get(position));
+                //intent.putExtra("image_name", mImageNames.get(position));
+                mContext.startActivity(intent);
             }
         });
+
     }
 
     @Override

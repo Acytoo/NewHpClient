@@ -185,6 +185,39 @@ public class MyDBHandler extends SQLiteOpenHelper{
     }
 
     /**
+     * Format: [priority]*[date] [plan]&, so I can split the result String
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+    public String getSomePlansSpecialFormat(long startTime, long endTime){
+        String dbString = "";
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME + " >= " + startTime + " AND "
+                + COLUMN_PLAN_TIME + " < " + endTime +
+                " ORDER BY "+ COLUMN_PLAN_TIME + " ASC;";
+        Cursor c = db.rawQuery(query, null);
+        //Move the cursor to the first row in your database
+        c.moveToFirst();
+        while (!c.isAfterLast()){
+            if (c.getString(c.getColumnIndex(COLUMN_PLAN_TIME)) != null){
+                Calendar tempca = Calendar.getInstance();
+                SimpleDateFormat ndf = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
+                tempca.setTimeInMillis(c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)));
+                dbString += c.getInt(c.getColumnIndex(COLUMN_PRIORITY)) + "#" + ndf.format(tempca.getTime()) +
+                        " " + c.getString(c.getColumnIndex(COLUMN_TODOS)) + "&";
+            }
+            c.moveToNext();
+        }
+        c.close();      //Close the cursor and the database
+        db.close();
+        return dbString;
+    }
+
+
+
+
+    /**
      * This method can auto delete the expired plan, I will find the expired plans first
      * than I can delete them.
      * Only the plans that are done and set to auto delete, we can delete the plan, no matter its priority

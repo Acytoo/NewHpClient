@@ -1,6 +1,7 @@
 package com.acytoo.newhpcliend;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,8 +20,8 @@ public class MyGestureDetector implements View.OnTouchListener{
 
     private final class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        private static final int SWIPE_THRESHOLD = 100;
-        private static final int SWIPE_VELOCITY_THRESHOLD = 100;
+        private static final int SWIPE_THRESHOLD = 10;
+        private static final int SWIPE_VELOCITY_THRESHOLD = 10;
 
         @Override
         public boolean onDown(MotionEvent e) {
@@ -46,6 +47,8 @@ public class MyGestureDetector implements View.OnTouchListener{
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+
+            Log.i("touchyt", "OnFling");
             boolean result = false;
             try {
                 float diffY = e2.getY() - e1.getY();
@@ -77,26 +80,33 @@ public class MyGestureDetector implements View.OnTouchListener{
     }
 
     public void onSwipeRight() {
+        Log.i("touchyt", "OnFling");
     }
 
     public void onSwipeLeft() {
+        Log.i("touchyt", "OnFling");
     }
 
     public void onSwipeTop() {
+        Log.i("touchyt", "OnFling");
     }
 
     public void onSwipeBottom() {
+        Log.i("touchyt", "OnFling");
     }
 
     public void onClick() {
+        Log.i("touchyt", "onClick");
 
     }
 
     public void onDoubleClick() {
+        Log.i("touchyt", "onDoubleClick");
 
     }
 
     public void onLongClick() {
+        Log.i("touchyt", "onLongClick");
 
     }
 
