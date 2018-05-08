@@ -34,11 +34,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<String> mImageNames;
     private ArrayList<String> mImages;
     private Context mContext;
+    private ArrayList<Integer> mID;
 
-    public RecyclerViewAdapter(Context context, ArrayList<String> imageNames, ArrayList<String> images ) {
+    public RecyclerViewAdapter(Context context, ArrayList<String> imageNames, ArrayList<String> images, ArrayList<Integer> id ) {
         mImageNames = imageNames;
         mImages = images;
         mContext = context;
+        mID = id;
     }
 
     @Override
@@ -66,14 +68,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(TAG, "onClick: clicked on: " + mImageNames.get(position));
+                //Toast.makeText(mContext, mID.get(position), Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onClick: clicked on: " + mID.get(position));
 
-                Toast.makeText(mContext, mImageNames.get(position), Toast.LENGTH_SHORT).show();
 
-                Intent intent = new Intent(mContext, EditPlanActivity.class);
+
+                Intent editActivity = new Intent(mContext, EditPlanActivity.class);
                 //intent.putExtra("image_url", mImages.get(position));
                 //intent.putExtra("image_name", mImageNames.get(position));
-                mContext.startActivity(intent);
+                editActivity.putExtra("id", mID.get(position));
+
+                mContext.startActivity(editActivity);
             }
         });
 

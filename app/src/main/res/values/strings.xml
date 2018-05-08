@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NewHpCliend</string>
+    <string name="app_name">Hyper Planner</string>
 
     <string name="all_plans">All Plans</string>
 
@@ -24,6 +24,7 @@
     <string name="date">Date</string>
     <string name="plan">Plan</string>
     <string name="add">ADD</string>
+    <string name="edit">EDIT</string>
     <string name="delete">DELETE</string>
 
     <!-- Strings in activity and other java files -->

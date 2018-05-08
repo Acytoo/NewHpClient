@@ -25,7 +25,7 @@ public class DetailActivity extends AppCompatActivity {
     private Calendar calendar;
     //private static Calendar caForEnd;
     private ArrayList<String> mPlans = new ArrayList<>();
-    private ArrayList<Integer> priorityNum = new ArrayList<>();
+    private ArrayList<Integer> mID = new ArrayList<>();
     private ArrayList<String> mImageUrls = new ArrayList<>();
     private FullscreenActivity.Level level;      //0, 1, 2, Day, Week, Month
     private MyDBHandler dbHandler;
@@ -77,19 +77,17 @@ public class DetailActivity extends AppCompatActivity {
 
         String parts[] = plans.split("&");
         for (int i=0; i<parts.length; i++){
-            mPlans.add(parts[i].split("#")[1]);
-            mImageUrls.add(url + parts[i].split("#")[0] + ".png");
+            mImageUrls.add(url + parts[i].split("#")[1] + ".png");
+            mPlans.add(parts[i].split("#")[2]);
+            mID.add(Integer.parseInt(parts[i].split("#")[0]));
+
         }
-
-
-
         initRecyclerView();
-
     }
 
     private void initRecyclerView(){
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mPlans, mImageUrls);
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, mPlans, mImageUrls, mID);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }

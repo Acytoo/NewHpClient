@@ -92,8 +92,6 @@ GestureDetector.OnDoubleTapListener{
         }
     };
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,13 +130,7 @@ GestureDetector.OnDoubleTapListener{
         calendar.set(Calendar.SECOND, 0);
         level = Level.DAY;
 
-
-
     }
-
-
-
-
 
     @Override
     protected void onStart() {
@@ -150,18 +142,15 @@ GestureDetector.OnDoubleTapListener{
         setTitle();
         String plans;
         if (level == Level.DAY){
-            plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),getNextDayMillis(calendar.getTimeInMillis()));
+            plans = dbHandler.getSomePlansNoDate(calendar.getTimeInMillis(),getNextDayMillis(calendar.getTimeInMillis()));
         } else if (level == Level.WEEK){
-            plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),getNextWeekMillis(calendar.getTimeInMillis()));
+            plans = dbHandler.getSomePlansSpecialFormat(calendar.getTimeInMillis(),getNextWeekMillis(calendar.getTimeInMillis()));
         } else{
             plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),getNextMonthMillis(calendar.getTimeInMillis()));
         }
         plansText.setText(plans);
         showNotification();
     }
-
-
-
 
     private void showNotification() {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, FullscreenActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
@@ -330,9 +319,9 @@ GestureDetector.OnDoubleTapListener{
     @Override
     public void onLongPress(MotionEvent e) {
         //testMessage.setText("onLongPress");
-        Intent editActivity = new Intent(FullscreenActivity.this, EditPlanActivity.class);
-        editActivity.putExtra("dateLong", calendar.getTimeInMillis());
-        startActivity(editActivity);
+        Intent addActivity = new Intent(FullscreenActivity.this, AddPlanActivity.class);
+        addActivity.putExtra("dateLong", calendar.getTimeInMillis());
+        startActivity(addActivity);
     }
 
 

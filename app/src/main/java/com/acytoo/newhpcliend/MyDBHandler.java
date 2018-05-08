@@ -161,6 +161,26 @@ public class MyDBHandler extends SQLiteOpenHelper{
         return datePlans;
     }
 
+    //
+    public String getPlanById(int id){
+        String dbString = "";
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_ID + " = " + id;
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        while (!c.isAfterLast()) {
+            dbString = c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)) + "#" +
+                    c.getInt(c.getColumnIndex(COLUMN_PRIORITY)) + "#" +
+                    c.getString(c.getColumnIndex(COLUMN_TODOS)) + "#" +
+                    c.getInt(c.getColumnIndex(COLUMN_DONE)) + "#" +
+                    c.getInt(c.getColumnIndex(COLUMN_AUTO_DELETE));
+            c.moveToNext();
+        }
+        c.close();
+        db.close();
+        return dbString;
+    }
+
     public String getSomePlans(long startTime, long endTime){
         String dbString = "";
         SQLiteDatabase db = getWritableDatabase();
@@ -183,9 +203,28 @@ public class MyDBHandler extends SQLiteOpenHelper{
         db.close();
         return dbString;
     }
+    public String getSomePlansNoDate(long startTime, long endTime){
+        String dbString = "";
+        SQLiteDatabase db = getWritableDatabase();
+        String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME + " >= " + startTime + " AND "
+                + COLUMN_PLAN_TIME + " < " + endTime +
+                " ORDER BY "+ COLUMN_PLAN_TIME + " ASC;";
+        Cursor c = db.rawQuery(query, null);
+        //Move the cursor to the first row in your database
+        c.moveToFirst();
+        while (!c.isAfterLast()){
+            if (c.getString(c.getColumnIndex(COLUMN_PLAN_TIME)) != null){
+                dbString += c.getString(c.getColumnIndex(COLUMN_TODOS)) + "\n";
+            }
+            c.moveToNext();
+        }
+        c.close();      //Close the cursor and the database
+        db.close();
+        return dbString;
+    }
 
     /**
-     * Format: [priority]*[date] [plan]&, so I can split the result String
+     * Format: [id]#[priority]#[date] [plan]&, so I can split the result String
      * @param startTime
      * @param endTime
      * @return
@@ -204,8 +243,10 @@ public class MyDBHandler extends SQLiteOpenHelper{
                 Calendar tempca = Calendar.getInstance();
                 SimpleDateFormat ndf = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
                 tempca.setTimeInMillis(c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)));
-                dbString += c.getInt(c.getColumnIndex(COLUMN_PRIORITY)) + "#" + ndf.format(tempca.getTime()) +
-                        " " + c.getString(c.getColumnIndex(COLUMN_TODOS)) + "&";
+                dbString += c.getInt(c.getColumnIndex(COLUMN_ID)) + "#" +
+                        c.getInt(c.getColumnIndex(COLUMN_PRIORITY)) + "#" +
+                        ndf.format(tempca.getTime()) +" " +
+                        c.getString(c.getColumnIndex(COLUMN_TODOS)) + "&";
             }
             c.moveToNext();
         }
@@ -213,8 +254,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
         db.close();
         return dbString;
     }
-
-
 
 
     /**
