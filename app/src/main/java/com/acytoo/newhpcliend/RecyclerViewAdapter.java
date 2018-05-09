@@ -51,8 +51,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
 
-
-
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
@@ -70,14 +68,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onClick(View view) {
                 //Toast.makeText(mContext, mID.get(position), Toast.LENGTH_SHORT).show();
                 Log.d(TAG, "onClick: clicked on: " + mID.get(position));
-
-
-
                 Intent editActivity = new Intent(mContext, EditPlanActivity.class);
-                //intent.putExtra("image_url", mImages.get(position));
-                //intent.putExtra("image_name", mImageNames.get(position));
                 editActivity.putExtra("id", mID.get(position));
-
                 mContext.startActivity(editActivity);
             }
         });

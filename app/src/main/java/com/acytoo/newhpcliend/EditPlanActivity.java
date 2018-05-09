@@ -33,9 +33,8 @@ public class EditPlanActivity extends AppCompatActivity {
     private EditText dateInput;
     private EditText planInput;
     private EditText timeInput;
-    private Button addButton;
+    private Button btn_edit;
     private Button deleteButton;
-    private Button showAllButton;
     private TextView planBoard;
     private Spinner prioritySpinner;
     private MyDBHandler dbHandler;
@@ -46,7 +45,6 @@ public class EditPlanActivity extends AppCompatActivity {
     private int planPriority;
     private Switch doneSwitch;
     private Switch autoDeleteSwitch;
-    private Button autoDeleteButton;
     enum DoneFlag {
         False, True
     }
@@ -79,7 +77,7 @@ public class EditPlanActivity extends AppCompatActivity {
                 actionBar.hide();
             }
         }
-
+        Log.i("alec", "onCreate");
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         timedf = new SimpleDateFormat("h:mm a", Locale.CHINA);
         Bundle getIDInfo = getIntent().getExtras();
@@ -95,16 +93,14 @@ public class EditPlanActivity extends AppCompatActivity {
         done = DoneFlag.False;
         autoDelete = AutoDeleteFlag.False;
 
-        addButton = findViewById(R.id.addButton);
+        btn_edit = findViewById(R.id.btn_edit);
         deleteButton = findViewById(R.id.deleteButton);
-        showAllButton = findViewById(R.id.showAllButton);
         dateInput = findViewById(R.id.editDate);
         planInput = findViewById(R.id.editPlan);
         timeInput = findViewById(R.id.editTime);
         planBoard = findViewById(R.id.planBoard);
         doneSwitch = findViewById(R.id.doneSwitch);
         autoDeleteSwitch = findViewById(R.id.autoDeleteSwitch);
-        autoDeleteButton = findViewById(R.id.autoDeleteButton);
 
         dbHandler = new MyDBHandler(this, null, null, 2);
 
@@ -130,16 +126,18 @@ public class EditPlanActivity extends AppCompatActivity {
                 }
         );
 
-        addButton.setOnClickListener(
-                new Button.OnClickListener(){
+        Log.i("alec", "after init");
+        btn_edit.setOnClickListener(new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
+                        Log.i("alec", "before if");
                         if (legal()){
+                            Log.i("alec", "onClickListener");
                             planTimeInMillis = calendar.getTimeInMillis();
                             Plans plan = new Plans(planTimeInMillis, planPriority, new Date().getTime(), "self",
                                     planInput.getText().toString(),
                                     done.ordinal(), autoDelete.ordinal(), 0);
-                            dbHandler.addPlan(plan);
+                            dbHandler.editPlan(id,plan);
                             showTodaysPlans();
                         }
                         else {
@@ -153,20 +151,12 @@ public class EditPlanActivity extends AppCompatActivity {
                 new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        String deletePlan = planInput.getText().toString();
-                        dbHandler.deletePlan(deletePlan);
+                        dbHandler.deleteById(id);
                         showTodaysPlans();
                     }
                 }
         );
-        showAllButton.setOnClickListener(
-                new Button.OnClickListener(){
-                    @Override
-                    public void onClick(View v) {
-                        showAllPlans();
-                    }
-                }
-        );
+
 
         dateInput.setInputType(InputType.TYPE_NULL);
         dateInput.setOnFocusChangeListener(
@@ -237,27 +227,29 @@ public class EditPlanActivity extends AppCompatActivity {
                 }
         );
 
-        autoDeleteButton.setOnClickListener(
-                new Button.OnClickListener(){
-                    @Override
-                    public void onClick(View v) {
-                        dbHandler.autoDelete();
-                    }
-                }
-        );
+
 
     }
 
-    /**
-     * dbString = c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)) + "#" +
-     c.getInt(c.getColumnIndex(COLUMN_PRIORITY)) + "#" +
-     c.getString(c.getColumnIndex(COLUMN_TODOS)) + "#" +
-     c.getInt(c.getColumnIndex(COLUMN_DONE)) + "#" +
-     c.getInt(c.getColumnIndex(COLUMN_AUTO_DELETE));
-     * @param id
-     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showTodaysPlans();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        showTodaysPlans();
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        showAllPlans();
+    }
 
     public void init(int id){
+        Log.i("alec", "init");
         String planSet = dbHandler.getPlanById(id);
         String parts[] = planSet.split("#");
         //Long planSetTimeMill = Long.parseLong(parts[0]);
@@ -280,7 +272,7 @@ public class EditPlanActivity extends AppCompatActivity {
         String plans;
         plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),calendar.getTimeInMillis()+24*3600*1000);
         planBoard.setText(plans);
-        planInput.setText("");
+        //planInput.setText("");
     }
     public void showAllPlans(){
         String allPlans = dbHandler.databaseToString();

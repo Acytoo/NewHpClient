@@ -105,12 +105,33 @@ public class MyDBHandler extends SQLiteOpenHelper{
         db.insert(TABLE_PLANS, null, values);
         db.close();
     }
+    public void editPlan(int id, Plans plan){
+        String query = "UPDATE " + TABLE_PLANS +
+                " SET " +
+                COLUMN_PLAN_TIME + " = " + plan.get_plan_time() + ", " +
+                COLUMN_PRIORITY + " = " + plan.get_priority() + ", " +
+                COLUMN_PLAN_SET_TIME + " = " + plan.get_plan_set_time() + ", " +
+                COLUMN_DONE + " = " + plan.get_done() + ", " +
+                COLUMN_AUTO_DELETE + " = " + plan.get_auto_delete() +
+                " WHERE " +
+                COLUMN_ID + " = " + id;
+        Log.i("alec", query);
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL(query);
+        db.close();
+    }
 
     public void deletePlan(String todo){
         SQLiteDatabase db = getWritableDatabase();
         db.execSQL("DELETE FROM " + TABLE_PLANS + " WHERE " + COLUMN_TODOS + "=\"" + todo + "\";" );
+        db.close();
     }
 
+    public void deleteById(int id){
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM " + TABLE_PLANS + " WHERE " + COLUMN_ID + " = " + id);
+        db.close();
+    }
 
     /**
      * Following method will return all the plans in a String for me to test the
