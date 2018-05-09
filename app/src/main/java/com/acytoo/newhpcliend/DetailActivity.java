@@ -67,6 +67,16 @@ public class DetailActivity extends AppCompatActivity {
 
         dbHandler = new MyDBHandler(this, null, null, 2);
 
+        //initPlans();
+
+    }
+
+    public void clearArrayList(){
+        mPlans.clear();
+        mImageUrls.clear();
+        mID.clear();
+    }
+    public void initPlans(){
         if (level == FullscreenActivity.Level.DAY){
             plans = dbHandler.getSomePlansSpecialFormat(calendar.getTimeInMillis(), getNextDayMillis(calendar.getTimeInMillis()));
         } else if (level == FullscreenActivity.Level.WEEK){
@@ -92,4 +102,10 @@ public class DetailActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        clearArrayList();
+        initPlans();
+    }
 }

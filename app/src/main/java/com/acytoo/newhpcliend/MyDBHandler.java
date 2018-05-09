@@ -36,7 +36,7 @@ import java.util.Locale;
  */
 public class MyDBHandler extends SQLiteOpenHelper{
 
-    private static final int DATABASE_VERSION = 2;                    //Current I stop using this version.
+    private static final int DATABASE_VERSION = 2;                    //Current using this version.
     private static final String DATABASE_NAME = "info.db";             //must have a .db extension
     private static final String TABLE_PLANS = "plans";               //the table name of your info
 
@@ -55,7 +55,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
     private SimpleDateFormat df;
 
     public MyDBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version) {
-        super(context, DATABASE_NAME, factory, version);
+        super(context, DATABASE_NAME, factory, DATABASE_VERSION);
     }
 
     public MyDBHandler(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, DatabaseErrorHandler errorHandler) {
@@ -111,6 +111,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
                 COLUMN_PLAN_TIME + " = " + plan.get_plan_time() + ", " +
                 COLUMN_PRIORITY + " = " + plan.get_priority() + ", " +
                 COLUMN_PLAN_SET_TIME + " = " + plan.get_plan_set_time() + ", " +
+                COLUMN_TODOS + " = \"" + plan.get_todos() + " \", " +
                 COLUMN_DONE + " = " + plan.get_done() + ", " +
                 COLUMN_AUTO_DELETE + " = " + plan.get_auto_delete() +
                 " WHERE " +
@@ -156,9 +157,30 @@ public class MyDBHandler extends SQLiteOpenHelper{
             }
             c.moveToNext();
         }
-        c.close();      //Close the cursor and the database
+        c.close();
         db.close();
         return dbString;
+    }
+
+    public String getMostImportantToday(long today){
+        Log.i("Alec", "here");
+        String topPlan = "";
+        SQLiteDatabase db = getWritableDatabase();
+        long tomorrow = today + 24 * 3600 * 1000;
+        String query = "SELECT " + COLUMN_TODOS + " FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME +
+                " >= " + today + " AND " + COLUMN_PLAN_TIME + " < " + tomorrow +
+                " ORDER BY "+ COLUMN_PRIORITY + " ASC;";
+        Cursor c = db.rawQuery(query, null);
+        c.moveToFirst();
+        while (!c.isAfterLast()){
+            topPlan = c.getString(c.getColumnIndex(COLUMN_TODOS));
+            c.moveToLast();
+            c.moveToNext();
+        }
+        Log.i("Alec", topPlan);
+        c.close();
+        db.close();
+        return topPlan;
     }
 
     public String getDatePlans(long today){
@@ -167,7 +189,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
         long tomorrow = today + 24 * 3600 * 1000;
         String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME + " >= " + today + " AND "
                 + COLUMN_PLAN_TIME + " < " + tomorrow +
-                " ORDER BY "+ COLUMN_PLAN_TIME + " ASC;";
+                " ORDER BY "+ COLUMN_PRIORITY + " ASC;";
         Cursor c = db.rawQuery(query, null);
         c.moveToFirst();
         while (!c.isAfterLast()){
@@ -182,7 +204,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
         return datePlans;
     }
 
-    //
     public String getPlanById(int id){
         String dbString = "";
         SQLiteDatabase db = getWritableDatabase();
@@ -209,7 +230,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
                 + COLUMN_PLAN_TIME + " < " + endTime +
                 " ORDER BY "+ COLUMN_PLAN_TIME + " ASC;";
         Cursor c = db.rawQuery(query, null);
-        //Move the cursor to the first row in your database
         c.moveToFirst();
         while (!c.isAfterLast()){
             if (c.getString(c.getColumnIndex(COLUMN_PLAN_TIME)) != null){
@@ -299,8 +319,5 @@ public class MyDBHandler extends SQLiteOpenHelper{
         c.close();
         db.close();
     }
-
-
-
 
 }

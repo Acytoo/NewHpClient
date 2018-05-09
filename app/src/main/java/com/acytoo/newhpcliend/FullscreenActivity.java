@@ -70,6 +70,7 @@ GestureDetector.OnDoubleTapListener{
     private static Calendar caForEnd;
     private TextView dateToday;
     private Level level;
+    private String topPlan;
 
     public enum Level{
         DAY, WEEK, MONTH
@@ -129,7 +130,9 @@ GestureDetector.OnDoubleTapListener{
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         level = Level.DAY;
-
+        Log.i("Alec", "before topPlan");
+        topPlan = dbHandler.getMostImportantToday(calendar.getTimeInMillis());
+        showNotification();
     }
 
     @Override
@@ -149,14 +152,14 @@ GestureDetector.OnDoubleTapListener{
             plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),getNextMonthMillis(calendar.getTimeInMillis()));
         }
         plansText.setText(plans);
-        showNotification();
+
     }
 
     private void showNotification() {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, FullscreenActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, null)
-                .setContentTitle("今日日程")
-                .setContentText("显示今日优先级最高的日程")
+                .setContentTitle("今日首要任务")
+                .setContentText(dbHandler.getMostImportantToday(calendar.getTimeInMillis()))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setAutoCancel(false)
                 .setOngoing(true)

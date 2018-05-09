@@ -12,7 +12,7 @@
 
     <TextView
         android:layout_width="wrap_content"
-        android:layout_height="19dp"
+        android:layout_height="23dp"
         android:id="@+id/dummy"/>
 
     <android.support.v7.widget.RecyclerView

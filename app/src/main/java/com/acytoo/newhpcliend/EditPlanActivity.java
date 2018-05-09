@@ -226,9 +226,6 @@ public class EditPlanActivity extends AppCompatActivity {
                     }
                 }
         );
-
-
-
     }
 
     @Override
