@@ -116,8 +116,6 @@ GestureDetector.OnDoubleTapListener{
         dbHandler = new MyDBHandler(this, null, null, 2);
         this.gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
-        final Intent serviceIntent = new Intent(FullscreenActivity.this, MyService.class);
-        bindService(serviceIntent, myNewConnection, Context.BIND_AUTO_CREATE);
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         plansText = findViewById(R.id.plansText);
         dateToday = findViewById(R.id.showDate);
@@ -130,8 +128,8 @@ GestureDetector.OnDoubleTapListener{
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         level = Level.DAY;
-        Log.i("Alec", "before topPlan");
         topPlan = dbHandler.getMostImportantToday(calendar.getTimeInMillis());
+        startMyService();
         showNotification();
     }
 
@@ -147,12 +145,23 @@ GestureDetector.OnDoubleTapListener{
         if (level == Level.DAY){
             plans = dbHandler.getSomePlansNoDate(calendar.getTimeInMillis(),getNextDayMillis(calendar.getTimeInMillis()));
         } else if (level == Level.WEEK){
-            plans = dbHandler.getSomePlansSpecialFormat(calendar.getTimeInMillis(),getNextWeekMillis(calendar.getTimeInMillis()));
+            plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),getNextWeekMillis(calendar.getTimeInMillis()));
         } else{
             plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),getNextMonthMillis(calendar.getTimeInMillis()));
         }
         plansText.setText(plans);
 
+    }
+
+    private void startMyService(){
+        if (!isBound) {
+            //Start the service
+            final Intent serviceIntent = new Intent(FullscreenActivity.this, MyService.class);
+            startService(serviceIntent);
+            bindService(serviceIntent, myNewConnection, Context.BIND_AUTO_CREATE);
+            Log.i("counter", "is bound? " + isBound);
+            //The service should started
+        }
     }
 
     private void showNotification() {
@@ -289,6 +298,8 @@ GestureDetector.OnDoubleTapListener{
         startActivity(loginActivity);*/
 
         Intent settingActivity = new Intent();
+        Log.d("counter", myNewService.getCurrentDate());
+
         settingActivity.setClass(FullscreenActivity.this, SettingsActivity.class);
         startActivity(settingActivity);
         return true;
@@ -305,8 +316,6 @@ GestureDetector.OnDoubleTapListener{
         //testMessage.setText("onShowPress");
 
     }
-
-
 
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
