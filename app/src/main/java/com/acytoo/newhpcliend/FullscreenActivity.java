@@ -70,7 +70,7 @@ GestureDetector.OnDoubleTapListener{
     private static Calendar caForEnd;
     private TextView dateToday;
     private Level level;
-    private String topPlan;
+
 
     public enum Level{
         DAY, WEEK, MONTH
@@ -128,7 +128,6 @@ GestureDetector.OnDoubleTapListener{
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         level = Level.DAY;
-        topPlan = dbHandler.getMostImportantToday(calendar.getTimeInMillis());
         startMyService();
         showNotification();
     }

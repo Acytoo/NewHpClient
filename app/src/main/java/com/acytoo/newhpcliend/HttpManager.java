@@ -22,8 +22,6 @@ public class HttpManager {
                 .build();
     }
 
-
-
     public void doLogin(String username, String password) {
         String jsonStr = "{\n" +
                 "    \"username\": \" " + username + "\",\n" +

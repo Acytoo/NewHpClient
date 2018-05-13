@@ -2,6 +2,8 @@ package com.acytoo.newhpcliend;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -23,6 +25,7 @@ public class MyService extends Service {
     private static MyDBHandler dbHandler;
     private WebSocket webSocket;
     private OkHttpClient client;
+    NetWorkStateReceiver netWorkStateReceiver;
 
     public MyService() {
     }
@@ -62,6 +65,13 @@ public class MyService extends Service {
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (netWorkStateReceiver == null) {
+            netWorkStateReceiver = new NetWorkStateReceiver();
+        }
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(netWorkStateReceiver, filter);
+
         if (!started) {
             started = true;
             new Thread(new Runnable() {
@@ -95,6 +105,7 @@ public class MyService extends Service {
     public void onDestroy() {
         interrupted = true;
         client.dispatcher().executorService().shutdown();
+        unregisterReceiver(netWorkStateReceiver);
         super.onDestroy();
     }
 
