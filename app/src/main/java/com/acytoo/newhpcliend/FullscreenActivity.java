@@ -11,13 +11,13 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -292,16 +292,18 @@ GestureDetector.OnDoubleTapListener{
     public boolean onDoubleTapEvent(MotionEvent e) {
         //testMessage.setText("onDoubleTapEvent");
 
-        /*
+
         Intent loginActivity = new Intent();
         loginActivity.setClass(FullscreenActivity.this, LoginActivity.class);
-        startActivity(loginActivity);*/
+        startActivity(loginActivity);
+
+        /*
 
         Intent settingActivity = new Intent();
         Log.d("counter", myNewService.getCurrentDate());
 
         settingActivity.setClass(FullscreenActivity.this, SettingsActivity.class);
-        startActivity(settingActivity);
+        startActivity(settingActivity);*/
         return true;
     }
 

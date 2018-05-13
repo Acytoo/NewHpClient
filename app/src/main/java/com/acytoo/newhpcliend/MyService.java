@@ -1,6 +1,5 @@
 package com.acytoo.newhpcliend;
 
-import android.app.DownloadManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -55,6 +54,7 @@ public class MyService extends Service {
      * this method won't called by system, Now I call the startService() first then bind it
      * Alec Chen
      * 12/5/2018 09:57
+     * 这个服务还要检测网络状态， 当网络状态改变时，重新连接， 发送用户名， 密码。
      * @param intent
      * @param flags
      * @param startId

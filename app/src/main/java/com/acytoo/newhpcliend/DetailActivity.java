@@ -16,8 +16,8 @@ import java.util.Date;
 import java.util.Locale;
 
 import static com.acytoo.newhpcliend.FullscreenActivity.getNextDayMillis;
-import static com.acytoo.newhpcliend.FullscreenActivity.getNextWeekMillis;
 import static com.acytoo.newhpcliend.FullscreenActivity.getNextMonthMillis;
+import static com.acytoo.newhpcliend.FullscreenActivity.getNextWeekMillis;
 
 public class DetailActivity extends AppCompatActivity {
 

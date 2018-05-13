@@ -20,9 +20,15 @@ public class MyWebSocketListener extends WebSocketListener {
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
         super.onOpen(webSocket, response);
-        webSocket.send("tested Plans");
+        //webSocket.send("tested Plans");
     }
 
+
+    /**
+     * 所接受数据类型可以不同， 根据第一个split结果来进行不同处理
+     * @param webSocket
+     * @param text
+     */
     @Override
     public void onMessage(WebSocket webSocket, String text) {
         super.onMessage(webSocket, text);

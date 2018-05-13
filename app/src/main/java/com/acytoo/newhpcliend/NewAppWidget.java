@@ -8,6 +8,7 @@ import android.widget.RemoteViews;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
+
 import static com.acytoo.newhpcliend.FullscreenActivity.getNextDayMillis;
 
 /**

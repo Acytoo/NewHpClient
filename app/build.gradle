@@ -33,6 +33,7 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.5.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.5.0'
 
-    //circle imageview
+    //circle image view
     implementation 'de.hdodenhof:circleimageview:2.2.0'
+
 }
