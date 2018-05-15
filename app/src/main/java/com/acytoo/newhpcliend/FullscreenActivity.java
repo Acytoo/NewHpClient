@@ -4,6 +4,7 @@ package com.acytoo.newhpcliend;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.Presentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -291,10 +292,10 @@ GestureDetector.OnDoubleTapListener{
     public boolean onDoubleTapEvent(MotionEvent e) {
         //testMessage.setText("onDoubleTapEvent");
 
-
+        /*
         Intent loginActivity = new Intent();
         loginActivity.setClass(FullscreenActivity.this, LoginActivity.class);
-        startActivity(loginActivity);
+        startActivity(loginActivity);*/
 
         /*
 
@@ -303,6 +304,9 @@ GestureDetector.OnDoubleTapListener{
 
         settingActivity.setClass(FullscreenActivity.this, SettingsActivity.class);
         startActivity(settingActivity);*/
+
+        Intent preferenceActivity = new Intent (MyApplication.getInstance(), PreferenceActivity.class);
+        startActivity(preferenceActivity);
         return true;
     }
 

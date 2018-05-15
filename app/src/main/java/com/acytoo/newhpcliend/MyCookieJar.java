@@ -85,4 +85,8 @@ public class MyCookieJar implements CookieJar {
         return savedCookies;
     }
 
+    public static String getLastCookie(){
+        return "not yet decided";
+    }
+
 }

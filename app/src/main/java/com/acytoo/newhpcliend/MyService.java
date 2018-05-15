@@ -79,11 +79,7 @@ public class MyService extends Service {
                 public void run() {
 
                     dbHandler = new MyDBHandler(MyApplication.getInstance(), null, null, 2);
-                    Request request = new Request.Builder().url("wss://echo.websocket.org").build();
-                    MyWebSocketListener listener = new MyWebSocketListener();
-                    client = new OkHttpClient();
-                    webSocket = client.newWebSocket(request, listener);
-                    webSocket.send("yet another plan");
+                    wsConnect();
 
                     while (!interrupted) {
                         try {
@@ -115,5 +111,18 @@ public class MyService extends Service {
                 "websocket", plan, 1,1,1 ));
         Log.d("planWebTest", "finish writing db");
 
+    }
+
+    public void wsConnect(){
+        Request request = new Request.Builder().url("wss://echo.websocket.org").build();
+        MyWebSocketListener listener = new MyWebSocketListener();
+        client = new OkHttpClient();
+        webSocket = client.newWebSocket(request, listener);
+        webSocket.send(MyCookieJar.getLastCookie());
+        /**
+         * 一共会有几个cookie?是否过期怎么判断
+         *
+         * 过期后如何处理？
+         */
     }
 }
