@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
@@ -204,19 +205,24 @@ public class RegisterActivity extends AppCompatActivity {
 
                         aaoManager.loginAAO(mId, mPassword, mCaptha);
 
-                        if (aaoManager.doGetImage("https://zhjw.neu.edu.cn/ACTIONVALIDATERANDOMPICTURE.APPPROCESS?id=")) {
-
-                            HttpManager httpManager = new HttpManager();
+                        if (aaoManager.doGetImage("https://zhjw.neu.edu.cn/ACTIONDSPUSERPHOTO.APPPROCESS")) {
                             Log.d("yllogin", "asdfasdfasdfasdfasdf");
-                            httpManager.doRegister(mId, mUserName, mPassword, mCaptha);
+                            aaoManager.doRegister(mId, mUserName, mPassword, mCaptha);
                         }
                         else {
-                            Log.d("yllogin", "can not login to aao");
+                            imgHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(MyApplication.getInstance(), "failed to login to aao", Toast.LENGTH_LONG).show();
+                                }
+                            });
+
                         }
                     }
                 }).start();
 
             } catch (Exception e) {
+                Log.d("yllogin", e.toString());
                 return false;
             }
 

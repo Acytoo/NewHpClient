@@ -28,6 +28,8 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+import static com.acytoo.newhpcliend.FileManager.encode;
+
 public class HttpManager {
 
     //private MyCookieJar cookieJar;
@@ -44,39 +46,52 @@ public class HttpManager {
     };
 
     public HttpManager() {
-        MyCookieJar cookieJar = new MyCookieJar();
+        Log.d("YLjson", "building new httpmanager");
+        MyCookieJar myCookieJar = new MyCookieJar();
         okHttpClient = new OkHttpClient.Builder()
-                .cookieJar(cookieJar)
+                .cookieJar(myCookieJar)
                 .build();
     }
 
     public HttpManager(CookieJar cookieJar) {
-        //this.cookieJar = cookieJar;
         okHttpClient = new OkHttpClient.Builder()
                 .cookieJar(cookieJar)
                 .build();
     }
 
     public void doLogin(String username, String password) {
+        FileManager fileManager = new FileManager();
+        Log.d("YLjson", "building new httpmanager11111");
         String jsonStr = "{\n" +
-                "    \"stuID\": \" " + username + "\",\n" +
-                "    \"password\": \" " + password + "\"\n" +
+                "    \"stuID\": \"" + username + "\",\n" +
+                "    \"password\": \"" + encode(password) + "\"\n" +
                 "}";
         Log.d("YLjson", jsonStr);
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonStr);
 
         Request request = new Request.Builder()
-                .url("https://reqres.in/api/users")
+                //.url("http://baidu.com")
+                //.url("http://hiapk.com/")
+                //.url("http://github.com")
+                .url("http://58.87.90.180:8080/newServer/LoginOfStu")
+                //.url("https://httpbin.org/cookies/set?stuid=KingJoffrey")
+                //.url("https://www.zhihu.com/")
                 .post(body)
                 .build();
 
         Log.d("YLjson", "started");
 
-        Response response = null;
+        Response response;
         try {
             response = okHttpClient.newCall(request).execute();
-            Log.d("YLjson", "result " + (response.body().string())); //json2pojo already explained
+            String result = response.body().string();
+            Log.d("ytsave", "result " + result); //json2pojo already explained
+            if (result.equals("yes")){
+                Log.d("ytsave", "there are same");
+                fileManager.saveToInternal(MyApplication.getInstance(), "login.yl", "you have logined");
+            }
         } catch (IOException e) {
+            Log.d("ytsave", "catch exception " + e.toString());
             e.printStackTrace();
         }
     }
@@ -85,9 +100,9 @@ public class HttpManager {
         Log.d("yllogin", "start login to server");
 
         String jsonStr = "{\n" +
-                "    \"stuID\": \" " + stuID + "\",\n" +
-                "    \"username\": \" " + username + "\",\n" +
-                "    \"password\": \" " + password + "\"\n" +
+                "    \"stuID\": \"" + stuID + "\",\n" +
+                "    \"username\": \"" + username + "\",\n" +
+                "    \"password\": \"" + encode(password) + "\"\n" +
                 "}";
         Log.d("YLjson", jsonStr);
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonStr);

@@ -131,6 +131,18 @@ GestureDetector.OnDoubleTapListener{
         level = Level.DAY;
         startMyService();
         showNotification();
+        FileManager fileManager = new FileManager();
+        //fileManager.saveToInternal(this, "login.yl", "fuck you asshole");
+        String loginInfo = fileManager.loadFromInternal(this, "login.yl");
+        if (loginInfo.equals("no")) {
+            Log.d("ytsave", "no such file");
+        }
+        else {
+            Log.d("ytsave", loginInfo);
+        }
+        //Log.d("ytsave", "why stoped?");
+
+
     }
 
     @Override
@@ -150,6 +162,8 @@ GestureDetector.OnDoubleTapListener{
             plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),getNextMonthMillis(calendar.getTimeInMillis()));
         }
         plansText.setText(plans);
+
+
 
     }
 

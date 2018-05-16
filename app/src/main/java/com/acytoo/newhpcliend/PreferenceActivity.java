@@ -35,6 +35,8 @@ public class PreferenceActivity extends AppCompatActivity {
             actionBar.hide();
         }
 
+
+        img_profile = findViewById(R.id.img_profile);
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,15 +45,24 @@ public class PreferenceActivity extends AppCompatActivity {
                 startActivity(loginActivity);
             }
         });
+
+
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
         try {
             Bitmap bitmap = new ImageSaver(MyApplication.getInstance()).
                     setFileName("profile.png").
                     setDirectoryName("images").
                     load();
+
+            img_profile.setImageBitmap(bitmap);
         } catch (Exception e){
             Log.d("yllogin", e.toString());
         }
-
     }
 
 }

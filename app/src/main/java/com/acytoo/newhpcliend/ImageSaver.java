@@ -89,13 +89,6 @@ public class ImageSaver {
     }
 
 
-
-
-
-
-
-
-
     public Bitmap load() {
         FileInputStream inputStream = null;
         try {

@@ -42,13 +42,13 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/email"
+                    android:id="@+id/input_login_id"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="17dp"
                     android:hint="@string/prompt_email"
                     android:inputType="number"
                     android:maxLines="1"
-                    android:layout_marginTop="17dp"
                     android:singleLine="true" />
 
             </android.support.design.widget.TextInputLayout>
@@ -58,7 +58,7 @@
                 android:layout_height="wrap_content">
 
                 <EditText
-                    android:id="@+id/password"
+                    android:id="@+id/input_login_password"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_password"

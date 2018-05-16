@@ -1,13 +1,16 @@
 package com.acytoo.newhpcliend;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
@@ -15,13 +18,17 @@ import okhttp3.HttpUrl;
 
 public class MyCookieJar implements CookieJar {
 
+
     private List<Cookie> cookies;
     private static final String FILE_NAME = "HotelCalifornia";
 
+
     @Override
     public void saveFromResponse(HttpUrl url, List<Cookie> cookies) {
-        this.cookies =  cookies;
+        this.cookies = cookies;
         String storedCookie = "";
+        Log.d("ytsave", "store cookies");
+        Log.d("ytsave", "building new Cookie Jar");
         for (Cookie cookie : cookies) {
             storedCookie = cookie.name() + "~" + cookie.value() + "~" +
                     cookie.domain() + "~" + cookie.expiresAt() + "~" +
@@ -33,6 +40,7 @@ public class MyCookieJar implements CookieJar {
         try {
             outputStream = MyApplication.getInstance().openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
             outputStream.write(storedCookie.getBytes());
+            Log.d("ytsave", "store cookies : " + storedCookie.toString());
             outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,4 +97,23 @@ public class MyCookieJar implements CookieJar {
         return "not yet decided";
     }
 
+    /*
+    private final Map<String, List<Cookie>> cookiesMap = new HashMap<String, List<Cookie> >();
+    @Override
+    public void saveFromResponse(HttpUrl arg0, List<Cookie> arg1) {
+        Log.d("ytsave", "start save@#$@#$@#$@#$@#$@#$@#$@#$@");
+        String host = arg0.host();
+        cookiesMap.put(host, arg1);
+        for(Cookie cookie:arg1) {
+            if(cookie.name().equals("20154445") ) {
+                Log.d("ytsave", "find cookies: " + cookie.value());
+            }
+        }
+    }
+
+    @Override
+    public List<Cookie> loadForRequest(HttpUrl arg0) {
+        List<Cookie> cookiesList = cookiesMap.get(arg0.host() );
+        return cookiesList != null ? cookiesList : new ArrayList<Cookie>();
+    }*/
 }

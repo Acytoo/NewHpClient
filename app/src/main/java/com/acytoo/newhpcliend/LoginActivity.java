@@ -20,6 +20,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,13 +31,19 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.franmontiel.persistentcookiejar.PersistentCookieJar;
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.CookieJar;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
 /**
- * A login screen that offers login via email/password.
+ * A login screen that offers login via sid/password.
  */
 
 /**
@@ -58,18 +65,14 @@ import static android.Manifest.permission.READ_CONTACTS;
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
 
 
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
     private UserLoginTask mAuthTask = null;
 
-    private EditText midView;
-    private EditText mPasswordView;
+    private EditText input_login_id;
+    private EditText input_login_password;
     private View mProgressView;
     private View mLoginFormView;
+    HttpManager httpManager;
+    CookieJar myCookieJar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,9 +91,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
 
-        midView = (EditText) findViewById(R.id.email);
-        mPasswordView = (EditText) findViewById(R.id.password);
-        mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        input_login_id = (EditText) findViewById(R.id.input_login_id);
+        input_login_password = (EditText) findViewById(R.id.input_login_password);
+        input_login_password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
@@ -101,8 +104,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
-        mEmailSignInButton.setOnClickListener(new OnClickListener() {
+        Button mIdSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        mIdSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
@@ -119,6 +122,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 startActivity(registerActivity);
             }
         });
+        Log.d("YLjson", "onCreate LoginActivity");
+//        myCookieJar = new PersistentCookieJar(new SetCookieCache(),
+//                new SharedPrefsCookiePersistor(MyApplication.getInstance()));
+        myCookieJar = new MyCookieJar();
+        httpManager = new HttpManager(myCookieJar);
+
     }
 
 
@@ -128,43 +137,39 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         // Reset errors.
-        midView.setError(null);
-        mPasswordView.setError(null);
+        input_login_id.setError(null);
+        input_login_password.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = midView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        String sid = input_login_id.getText().toString();
+        String password = input_login_password.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
         if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
+            input_login_password.setError(getString(R.string.error_invalid_password));
+            focusView = input_login_password;
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            midView.setError(getString(R.string.error_field_required));
-            focusView = midView;
+        // Check for a valid sid address.
+        if (TextUtils.isEmpty(sid)) {
+            input_login_id.setError(getString(R.string.error_field_required));
+            focusView = input_login_id;
             cancel = true;
-        } else if (!isSIdValid(email)) {
-            midView.setError(getString(R.string.error_invalid_email));
-            focusView = midView;
+        } else if (!isSIdValid(sid)) {
+            input_login_id.setError(getString(R.string.error_invalid_email));
+            focusView = input_login_id;
             cancel = true;
         }
 
         if (cancel) {
-            // There was an error; don't attempt login and focus the first
-            // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserLoginTask(sid, password);
             mAuthTask.execute((Void) null);
         }
     }
@@ -177,7 +182,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isPasswordValid(String password) {
         //教务处密码可以有多少位
-        return password.length() > 4;
+        return password.length() > 1;
     }
 
     /**
@@ -185,10 +190,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
-        // There functions work only on API 21+
         int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
         mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
@@ -219,13 +220,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Uri.withAppendedPath(ContactsContract.Profile.CONTENT_URI,
                         ContactsContract.Contacts.Data.CONTENT_DIRECTORY), ProfileQuery.PROJECTION,
 
-                // Select only email addresses.
+                // Select only sid addresses.
                 ContactsContract.Contacts.Data.MIMETYPE +
                         " = ?", new String[]{ContactsContract.CommonDataKinds.Email
                 .CONTENT_ITEM_TYPE},
 
-                // Show primary email addresses first. Note that there won't be
-                // a primary email address if the user hasn't specified one.
+                // Show primary sid addresses first. Note that there won't be
+                // a primary sid address if the user hasn't specified one.
                 ContactsContract.Contacts.Data.IS_PRIMARY + " DESC");
     }
 
@@ -262,11 +263,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
-        private final String mEmail;
+        private final String mId;
         private final String mPassword;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
+        UserLoginTask(String sid, String password) {
+            mId = sid;
             mPassword = password;
         }
 
@@ -278,21 +279,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        HttpManager httpManager = new HttpManager();
-                        httpManager.doLogin("KingJoffrey", "123456");
+                        Log.d("YLjson", "do in backGround, in thread");
+                        httpManager.doLogin(mId, mPassword);
                     }
                 }).start();
 
             } catch (Exception e) {
+                Log.d("ytsave", "after login error " + e.toString());
                 return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
             }
 
             // TODO: register the new account here.
@@ -307,8 +301,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (success) {
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                input_login_password.setError(getString(R.string.error_incorrect_password));
+                input_login_password.requestFocus();
             }
         }
 
