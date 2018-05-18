@@ -1,15 +1,18 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.ui;
 
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.widget.RemoteViews;
 
+import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.utils.MyDBHandler;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static com.acytoo.newhpcliend.FullscreenActivity.getNextDayMillis;
+import static com.acytoo.newhpcliend.ui.FullscreenActivity.getNextDayMillis;
 
 /**
  * 目前设想只支持一天的日程或课表， 不支持交互

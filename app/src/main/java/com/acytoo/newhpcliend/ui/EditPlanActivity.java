@@ -1,4 +1,4 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.ui;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -20,20 +20,23 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.utils.MyDBHandler;
+import com.acytoo.newhpcliend.utils.Plans;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 
-public class AddPlanActivity extends AppCompatActivity {
+public class EditPlanActivity extends AppCompatActivity {
 
     private EditText dateInput;
     private EditText planInput;
     private EditText timeInput;
-    private Button addButton;
+    private Button btn_edit;
     private Button deleteButton;
-    private Button showAllButton;
     private TextView planBoard;
     private Spinner prioritySpinner;
     private MyDBHandler dbHandler;
@@ -44,7 +47,6 @@ public class AddPlanActivity extends AppCompatActivity {
     private int planPriority;
     private Switch doneSwitch;
     private Switch autoDeleteSwitch;
-    private Button autoDeleteButton;
     enum DoneFlag {
         False, True
     }
@@ -53,18 +55,12 @@ public class AddPlanActivity extends AppCompatActivity {
     }
     private DoneFlag done;
     private AutoDeleteFlag autoDelete;
-
-    /**
-     * in future, autoDelete method can be put in onStart(), so we don't need
-     * to call it manually.
-     *
-     * @param savedInstanceState
-     */
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_plan);
+        setContentView(R.layout.activity_edit_plan);
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -76,40 +72,38 @@ public class AddPlanActivity extends AppCompatActivity {
                 actionBar.hide();
             }
         }
-
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         timedf = new SimpleDateFormat("h:mm a", Locale.CHINA);
-        Bundle getDateInfo = getIntent().getExtras();
+        Bundle getIDInfo = getIntent().getExtras();
         calendar = Calendar.getInstance();
-        if (getDateInfo == null){
-            calendar.setTime(new Date());
+        if (getIDInfo == null){
+            id = -1;
         }
         else{
-            calendar.setTimeInMillis(getDateInfo.getLong("dateLong"));
+            id = getIDInfo.getInt("id");
         }
         planPriority = 0;
         done = DoneFlag.False;
         autoDelete = AutoDeleteFlag.False;
 
-        addButton = findViewById(R.id.addButton);
+        btn_edit = findViewById(R.id.btn_edit);
         deleteButton = findViewById(R.id.deleteButton);
-        showAllButton = findViewById(R.id.showAllButton);
         dateInput = findViewById(R.id.editDate);
         planInput = findViewById(R.id.editPlan);
         timeInput = findViewById(R.id.editTime);
         planBoard = findViewById(R.id.planBoard);
         doneSwitch = findViewById(R.id.doneSwitch);
         autoDeleteSwitch = findViewById(R.id.autoDeleteSwitch);
-        autoDeleteButton = findViewById(R.id.autoDeleteButton);
 
         dbHandler = new MyDBHandler(this, null, null, 2);
-        dateInput.setText(df.format(calendar.getTime()));
-        timeInput.setText(timedf.format(calendar.getTime()));
+
         prioritySpinner = findViewById(R.id.prioritySpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.priority_items, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         prioritySpinner.setAdapter(adapter);
+
+        init(id);
 
         prioritySpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
@@ -125,8 +119,7 @@ public class AddPlanActivity extends AppCompatActivity {
                 }
         );
 
-        addButton.setOnClickListener(
-                new Button.OnClickListener(){
+        btn_edit.setOnClickListener(new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
                         if (legal()){
@@ -134,11 +127,8 @@ public class AddPlanActivity extends AppCompatActivity {
                             Plans plan = new Plans(planTimeInMillis, planPriority, new Date().getTime(), "self",
                                     planInput.getText().toString(),
                                     done.ordinal(), autoDelete.ordinal(), 0);
-                            dbHandler.addPlan(plan);
+                            dbHandler.editPlan(id,plan);
                             showTodaysPlans();
-                        }
-                        else {
-                            planInput.setText("Please enter your plan here");
                         }
                     }
                 }
@@ -148,20 +138,12 @@ public class AddPlanActivity extends AppCompatActivity {
                 new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        String deletePlan = planInput.getText().toString();
-                        dbHandler.deletePlan(deletePlan);
+                        dbHandler.deleteById(id);
                         showTodaysPlans();
                     }
                 }
         );
-        showAllButton.setOnClickListener(
-                new Button.OnClickListener(){
-                    @Override
-                    public void onClick(View v) {
-                        showAllPlans();
-                    }
-                }
-        );
+
 
         dateInput.setInputType(InputType.TYPE_NULL);
         dateInput.setOnFocusChangeListener(
@@ -231,23 +213,51 @@ public class AddPlanActivity extends AppCompatActivity {
                     }
                 }
         );
-
-        autoDeleteButton.setOnClickListener(
-                new Button.OnClickListener(){
-                    @Override
-                    public void onClick(View v) {
-                        dbHandler.autoDelete();
-                    }
-                }
-        );
-
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        showTodaysPlans();
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+        showTodaysPlans();
+    }
+    @Override
+    protected void onResume(){
+        super.onResume();
+        showAllPlans();
+    }
+
+    public void init(int id){
+        String planSet = dbHandler.getPlanById(id);
+        String parts[] = planSet.split("#");
+
+        //Long planSetTimeMill = Long.parseLong(parts[0]);
+        //int priority = Integer.parseInt(parts[1]);
+        //String _todo = parts[2];
+        //int done = Integer.parseInt(parts[3]);
+        //int autoDelete = Integer.parseInt(parts[4]);
+
+        calendar.setTimeInMillis(Long.parseLong(parts[0]));
+        dateInput.setText(df.format(calendar.getTime()));
+        timeInput.setText(timedf.format(calendar.getTime()));
+        prioritySpinner.setSelection(Integer.parseInt(parts[1]));
+        planInput.setText(parts[2]);
+        doneSwitch.setChecked(Integer.parseInt(parts[3]) == 1);
+        done = DoneFlag.values()[Integer.parseInt(parts[3])];
+        autoDeleteSwitch.setChecked(Integer.parseInt(parts[4]) == 1);
+        autoDelete = AutoDeleteFlag.values()[Integer.parseInt(parts[4])];
+    }
+
 
     public void showTodaysPlans(){
         String plans;
         plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),calendar.getTimeInMillis()+24*3600*1000);
         planBoard.setText(plans);
-        planInput.setText("");
     }
     public void showAllPlans(){
         String allPlans = dbHandler.databaseToString();
@@ -255,7 +265,7 @@ public class AddPlanActivity extends AppCompatActivity {
     }
     private void showDatePickerDialog() {
         final Calendar ca = Calendar.getInstance();
-        new DatePickerDialog(AddPlanActivity.this, new DatePickerDialog.OnDateSetListener() {
+        new DatePickerDialog(EditPlanActivity.this, new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -270,7 +280,7 @@ public class AddPlanActivity extends AppCompatActivity {
         final Calendar ca = Calendar.getInstance();
         int hour = ca.get(Calendar.HOUR_OF_DAY);
         int minute = ca.get(Calendar.MINUTE);
-        new TimePickerDialog(AddPlanActivity.this, new TimePickerDialog.OnTimeSetListener() {
+        new TimePickerDialog(EditPlanActivity.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);

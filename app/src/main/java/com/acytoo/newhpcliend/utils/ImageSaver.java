@@ -1,4 +1,4 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;

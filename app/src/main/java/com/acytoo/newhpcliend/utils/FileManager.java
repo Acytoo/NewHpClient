@@ -1,4 +1,4 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.utils;
 
 import android.content.Context;
 import android.util.Log;
@@ -49,7 +49,7 @@ public class FileManager {
             Log.d("ytsave", "read errror " + e.toString());
             e.printStackTrace();
         }
-        return "no";
+        return null;
 
     }
 

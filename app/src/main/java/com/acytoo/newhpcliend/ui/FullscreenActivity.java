@@ -1,10 +1,9 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.ui;
 
 
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Presentation;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +12,7 @@ import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GestureDetectorCompat;
@@ -24,6 +24,12 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import com.acytoo.newhpcliend.MyApplication;
+import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.service.MyService;
+import com.acytoo.newhpcliend.utils.FileManager;
+import com.acytoo.newhpcliend.utils.MyDBHandler;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -71,6 +77,7 @@ GestureDetector.OnDoubleTapListener{
     private static Calendar caForEnd;
     private TextView dateToday;
     private Level level;
+    private boolean login;
 
 
     public enum Level{
@@ -78,21 +85,7 @@ GestureDetector.OnDoubleTapListener{
     }
 
     MyService myNewService;
-    boolean isBound = false;
 
-    private ServiceConnection myNewConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            MyService.MyLocalBinder binder = (MyService.MyLocalBinder) service;
-            myNewService = binder.getService();
-            isBound = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            isBound = false;
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,17 +122,11 @@ GestureDetector.OnDoubleTapListener{
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         level = Level.DAY;
+        login = false;
         startMyService();
+        Log.d("netchanged", "after start the service");
         showNotification();
-        FileManager fileManager = new FileManager();
-        //fileManager.saveToInternal(this, "login.yl", "fuck you asshole");
-        String loginInfo = fileManager.loadFromInternal(this, "login.yl");
-        if (loginInfo.equals("no")) {
-            Log.d("ytsave", "no such file");
-        }
-        else {
-            Log.d("ytsave", loginInfo);
-        }
+
         //Log.d("ytsave", "why stoped?");
 
 
@@ -163,33 +150,45 @@ GestureDetector.OnDoubleTapListener{
         }
         plansText.setText(plans);
 
+        FileManager fileManager = new FileManager();
+        //fileManager.saveToInternal(this, "login.yl", "fuck you asshole");
+        String loginInfo = fileManager.loadFromInternal(this, "login.yl");
+        if (loginInfo != null) {
+            login = true;
+        }
+
 
 
     }
 
     private void startMyService(){
-        if (!isBound) {
+
             //Start the service
             final Intent serviceIntent = new Intent(FullscreenActivity.this, MyService.class);
+            Log.d("netchanged", "afetr build intent ");
             startService(serviceIntent);
-            bindService(serviceIntent, myNewConnection, Context.BIND_AUTO_CREATE);
-            Log.i("counter", "is bound? " + isBound);
+            Log.d("netchanged", "sfter start the service");
+
             //The service should started
-        }
+
     }
 
     private void showNotification() {
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, FullscreenActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, null)
-                .setContentTitle("今日首要任务")
-                .setContentText(dbHandler.getMostImportantToday(calendar.getTimeInMillis()))
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setAutoCancel(false)
-                .setOngoing(true)
-                .setContentIntent(pendingIntent);
-        Notification notification = builder.build();
-        NotificationManager manager =(NotificationManager)getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.notify(1,notification);
+        try {
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, FullscreenActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, null)
+                    .setContentTitle("今日首要任务")
+                    .setContentText(dbHandler.getMostImportantToday(calendar.getTimeInMillis()))
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setAutoCancel(false)
+                    .setOngoing(true)
+                    .setContentIntent(pendingIntent);
+            Notification notification = builder.build();
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            manager.notify(1, notification);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

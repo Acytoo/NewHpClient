@@ -1,4 +1,4 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.acytoo.newhpcliend.R;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;

@@ -10,7 +10,7 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
 
-    tools:context=".AddPlanActivity">
+    tools:context=".ui.AddPlanActivity">
 
     <!-- prevent the view to get focus automatically-->
 

@@ -1,4 +1,4 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -7,16 +7,14 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -25,22 +23,18 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.franmontiel.persistentcookiejar.PersistentCookieJar;
-import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
-import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
+import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.utils.HttpManager;
+import com.acytoo.newhpcliend.utils.MyCookieJar;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.CookieJar;
-
-import static android.Manifest.permission.READ_CONTACTS;
 
 /**
  * A login screen that offers login via sid/password.
@@ -73,6 +67,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mLoginFormView;
     HttpManager httpManager;
     CookieJar myCookieJar;
+    public static Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,8 +118,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
         });
         Log.d("YLjson", "onCreate LoginActivity");
-//        myCookieJar = new PersistentCookieJar(new SetCookieCache(),
-//                new SharedPrefsCookiePersistor(MyApplication.getInstance()));
+
         myCookieJar = new MyCookieJar();
         httpManager = new HttpManager(myCookieJar);
 

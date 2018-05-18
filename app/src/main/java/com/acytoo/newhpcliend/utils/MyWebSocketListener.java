@@ -1,4 +1,4 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.utils;
 
 import android.support.annotation.Nullable;
 
@@ -7,7 +7,7 @@ import okhttp3.WebSocket;
 import okhttp3.WebSocketListener;
 import okio.ByteString;
 
-import static com.acytoo.newhpcliend.MyService.output;
+import static com.acytoo.newhpcliend.service.MyService.output;
 
 public class MyWebSocketListener extends WebSocketListener {
 

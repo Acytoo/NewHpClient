@@ -1,15 +1,22 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.ui;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.util.Log;
+import android.view.MenuInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -21,19 +28,24 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.utils.MyDBHandler;
+import com.acytoo.newhpcliend.utils.Plans;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 
-public class EditPlanActivity extends AppCompatActivity {
+public class AddPlanActivity extends AppCompatActivity {
 
     private EditText dateInput;
     private EditText planInput;
     private EditText timeInput;
-    private Button btn_edit;
+    private Button addButton;
     private Button deleteButton;
+    private Button showAllButton;
     private TextView planBoard;
     private Spinner prioritySpinner;
     private MyDBHandler dbHandler;
@@ -44,6 +56,7 @@ public class EditPlanActivity extends AppCompatActivity {
     private int planPriority;
     private Switch doneSwitch;
     private Switch autoDeleteSwitch;
+    private Button autoDeleteButton;
     enum DoneFlag {
         False, True
     }
@@ -52,7 +65,6 @@ public class EditPlanActivity extends AppCompatActivity {
     }
     private DoneFlag done;
     private AutoDeleteFlag autoDelete;
-    private int id;
 
     /**
      * in future, autoDelete method can be put in onStart(), so we don't need
@@ -64,7 +76,7 @@ public class EditPlanActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_edit_plan);
+        setContentView(R.layout.activity_add_plan);
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
             int option = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
@@ -76,40 +88,40 @@ public class EditPlanActivity extends AppCompatActivity {
                 actionBar.hide();
             }
         }
-        Log.i("alec", "onCreate");
+
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         timedf = new SimpleDateFormat("h:mm a", Locale.CHINA);
-        Bundle getIDInfo = getIntent().getExtras();
+        Bundle getDateInfo = getIntent().getExtras();
         calendar = Calendar.getInstance();
-        if (getIDInfo == null){
-            id = -1;
+        if (getDateInfo == null){
+            calendar.setTime(new Date());
         }
         else{
-            id = getIDInfo.getInt("id");
-            Log.i("recid", "id :" + id);
+            calendar.setTimeInMillis(getDateInfo.getLong("dateLong"));
         }
         planPriority = 0;
         done = DoneFlag.False;
         autoDelete = AutoDeleteFlag.False;
 
-        btn_edit = findViewById(R.id.btn_edit);
+        addButton = findViewById(R.id.addButton);
         deleteButton = findViewById(R.id.deleteButton);
+        showAllButton = findViewById(R.id.showAllButton);
         dateInput = findViewById(R.id.editDate);
         planInput = findViewById(R.id.editPlan);
         timeInput = findViewById(R.id.editTime);
         planBoard = findViewById(R.id.planBoard);
         doneSwitch = findViewById(R.id.doneSwitch);
         autoDeleteSwitch = findViewById(R.id.autoDeleteSwitch);
+        autoDeleteButton = findViewById(R.id.autoDeleteButton);
 
         dbHandler = new MyDBHandler(this, null, null, 2);
-
+        dateInput.setText(df.format(calendar.getTime()));
+        timeInput.setText(timedf.format(calendar.getTime()));
         prioritySpinner = findViewById(R.id.prioritySpinner);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.priority_items, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         prioritySpinner.setAdapter(adapter);
-
-        init(id);
 
         prioritySpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
@@ -125,22 +137,20 @@ public class EditPlanActivity extends AppCompatActivity {
                 }
         );
 
-        Log.i("alec", "after init");
-        btn_edit.setOnClickListener(new Button.OnClickListener(){
+        addButton.setOnClickListener(
+                new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        Log.i("alec", "before if");
                         if (legal()){
-                            Log.i("alec", "onClickListener");
                             planTimeInMillis = calendar.getTimeInMillis();
                             Plans plan = new Plans(planTimeInMillis, planPriority, new Date().getTime(), "self",
                                     planInput.getText().toString(),
                                     done.ordinal(), autoDelete.ordinal(), 0);
-                            dbHandler.editPlan(id,plan);
+                            dbHandler.addPlan(plan);
                             showTodaysPlans();
                         }
                         else {
-                            //planInput.setText("Please enter your plan here");
+                            planInput.setText("Please enter your plan here");
                         }
                     }
                 }
@@ -150,12 +160,20 @@ public class EditPlanActivity extends AppCompatActivity {
                 new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
-                        dbHandler.deleteById(id);
+                        String deletePlan = planInput.getText().toString();
+                        dbHandler.deletePlan(deletePlan);
                         showTodaysPlans();
                     }
                 }
         );
-
+        showAllButton.setOnClickListener(
+                new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        showAllPlans();
+                    }
+                }
+        );
 
         dateInput.setInputType(InputType.TYPE_NULL);
         dateInput.setOnFocusChangeListener(
@@ -225,50 +243,23 @@ public class EditPlanActivity extends AppCompatActivity {
                     }
                 }
         );
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        showTodaysPlans();
-    }
+        autoDeleteButton.setOnClickListener(
+                new Button.OnClickListener(){
+                    @Override
+                    public void onClick(View v) {
+                        dbHandler.autoDelete();
+                    }
+                }
+        );
 
-    @Override
-    protected void onPostResume() {
-        super.onPostResume();
-        showTodaysPlans();
     }
-    @Override
-    protected void onResume(){
-        super.onResume();
-        showAllPlans();
-    }
-
-    public void init(int id){
-        Log.i("alec", "init");
-        String planSet = dbHandler.getPlanById(id);
-        String parts[] = planSet.split("#");
-        //Long planSetTimeMill = Long.parseLong(parts[0]);
-        //int priority = Integer.parseInt(parts[1]);
-        //String _todo = parts[2];
-        //int done = Integer.parseInt(parts[3]);
-        //int autoDelete = Integer.parseInt(parts[4]);
-
-        calendar.setTimeInMillis(Long.parseLong(parts[0]));
-        dateInput.setText(df.format(calendar.getTime()));
-        timeInput.setText(timedf.format(calendar.getTime()));
-        prioritySpinner.setSelection(Integer.parseInt(parts[1]));
-        planInput.setText(parts[2]);
-        doneSwitch.setChecked(Integer.parseInt(parts[3]) == 1);
-        autoDeleteSwitch.setChecked(Integer.parseInt(parts[4]) == 1);
-    }
-
 
     public void showTodaysPlans(){
         String plans;
         plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),calendar.getTimeInMillis()+24*3600*1000);
         planBoard.setText(plans);
-        //planInput.setText("");
+        planInput.setText("");
     }
     public void showAllPlans(){
         String allPlans = dbHandler.databaseToString();
@@ -276,7 +267,7 @@ public class EditPlanActivity extends AppCompatActivity {
     }
     private void showDatePickerDialog() {
         final Calendar ca = Calendar.getInstance();
-        new DatePickerDialog(EditPlanActivity.this, new DatePickerDialog.OnDateSetListener() {
+        new DatePickerDialog(AddPlanActivity.this, new DatePickerDialog.OnDateSetListener() {
 
             @Override
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -291,7 +282,7 @@ public class EditPlanActivity extends AppCompatActivity {
         final Calendar ca = Calendar.getInstance();
         int hour = ca.get(Calendar.HOUR_OF_DAY);
         int minute = ca.get(Calendar.MINUTE);
-        new TimePickerDialog(EditPlanActivity.this, new TimePickerDialog.OnTimeSetListener() {
+        new TimePickerDialog(AddPlanActivity.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
                 calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
@@ -309,4 +300,99 @@ public class EditPlanActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * A {@link android.preference.PreferenceActivity} which implements and proxies the necessary calls
+     * to be used with AppCompat.
+     */
+    public abstract static class AppCompatPreferenceActivity extends PreferenceActivity {
+
+        private AppCompatDelegate mDelegate;
+
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            getDelegate().installViewFactory();
+            getDelegate().onCreate(savedInstanceState);
+            super.onCreate(savedInstanceState);
+        }
+
+        @Override
+        protected void onPostCreate(Bundle savedInstanceState) {
+            super.onPostCreate(savedInstanceState);
+            getDelegate().onPostCreate(savedInstanceState);
+        }
+
+        public ActionBar getSupportActionBar() {
+            return getDelegate().getSupportActionBar();
+        }
+
+        public void setSupportActionBar(@Nullable Toolbar toolbar) {
+            getDelegate().setSupportActionBar(toolbar);
+        }
+
+        @Override
+        public MenuInflater getMenuInflater() {
+            return getDelegate().getMenuInflater();
+        }
+
+        @Override
+        public void setContentView(@LayoutRes int layoutResID) {
+            getDelegate().setContentView(layoutResID);
+        }
+
+        @Override
+        public void setContentView(View view) {
+            getDelegate().setContentView(view);
+        }
+
+        @Override
+        public void setContentView(View view, ViewGroup.LayoutParams params) {
+            getDelegate().setContentView(view, params);
+        }
+
+        @Override
+        public void addContentView(View view, ViewGroup.LayoutParams params) {
+            getDelegate().addContentView(view, params);
+        }
+
+        @Override
+        protected void onPostResume() {
+            super.onPostResume();
+            getDelegate().onPostResume();
+        }
+
+        @Override
+        protected void onTitleChanged(CharSequence title, int color) {
+            super.onTitleChanged(title, color);
+            getDelegate().setTitle(title);
+        }
+
+        @Override
+        public void onConfigurationChanged(Configuration newConfig) {
+            super.onConfigurationChanged(newConfig);
+            getDelegate().onConfigurationChanged(newConfig);
+        }
+
+        @Override
+        protected void onStop() {
+            super.onStop();
+            getDelegate().onStop();
+        }
+
+        @Override
+        protected void onDestroy() {
+            super.onDestroy();
+            getDelegate().onDestroy();
+        }
+
+        public void invalidateOptionsMenu() {
+            getDelegate().invalidateOptionsMenu();
+        }
+
+        private AppCompatDelegate getDelegate() {
+            if (mDelegate == null) {
+                mDelegate = AppCompatDelegate.create(this, null);
+            }
+            return mDelegate;
+        }
+    }
 }

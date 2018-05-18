@@ -1,16 +1,16 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.utils;
 
 import android.content.Context;
 import android.util.Log;
+
+import com.acytoo.newhpcliend.MyApplication;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import okhttp3.Cookie;
 import okhttp3.CookieJar;
@@ -93,8 +93,35 @@ public class MyCookieJar implements CookieJar {
         return savedCookies;
     }
 
+    /**
+     * 会有多少个cookie?
+     * @return
+     */
+
     public static String getLastCookie(){
-        return "not yet decided";
+        String coo;
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            FileInputStream fileInputStream = MyApplication.getInstance().openFileInput(FILE_NAME);
+            Log.d("netchanged", "it content is " + fileInputStream.available());
+
+
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            while ((coo = bufferedReader.readLine()) != null) {
+                sb.append(coo);
+            }
+            fileInputStream.close();
+            coo = sb.toString();
+            return "_" + coo.split("~")[0] + "_" + coo.split("~")[1];
+        } catch (Exception e) {
+            e.printStackTrace();
+            Log.d("netchanged", e.toString());
+
+        }
+        return null;
+
     }
 
     /*

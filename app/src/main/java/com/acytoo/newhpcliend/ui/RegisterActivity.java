@@ -1,4 +1,4 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.ui;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -7,10 +7,10 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -22,6 +22,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.acytoo.newhpcliend.MyApplication;
+import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.utils.HttpManager;
 import com.franmontiel.persistentcookiejar.PersistentCookieJar;
 import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
 import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
@@ -194,7 +197,7 @@ public class RegisterActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        // aao -> save ing -> sign to our server
+                        // aao -> save img -> sign to our server
                         //Build two client
                         //The register method using persistent cookieJar form Github, since my own CookieJar won't clean the olk cookies
                         //After login, we can save a file to the internal storage, every time the app boot,
@@ -206,7 +209,7 @@ public class RegisterActivity extends AppCompatActivity {
                         aaoManager.loginAAO(mId, mPassword, mCaptha);
 
                         if (aaoManager.doGetImage("https://zhjw.neu.edu.cn/ACTIONDSPUSERPHOTO.APPPROCESS")) {
-                            Log.d("yllogin", "asdfasdfasdfasdfasdf");
+                            Log.d("yllogin", "get profile and start to register to our own server");
                             aaoManager.doRegister(mId, mUserName, mPassword, mCaptha);
                         }
                         else {

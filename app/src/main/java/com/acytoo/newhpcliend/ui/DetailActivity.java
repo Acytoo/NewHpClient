@@ -1,4 +1,4 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.ui;
 
 import android.graphics.Color;
 import android.os.Build;
@@ -9,15 +9,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.utils.MyDBHandler;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.acytoo.newhpcliend.FullscreenActivity.getNextDayMillis;
-import static com.acytoo.newhpcliend.FullscreenActivity.getNextMonthMillis;
-import static com.acytoo.newhpcliend.FullscreenActivity.getNextWeekMillis;
+import static com.acytoo.newhpcliend.ui.FullscreenActivity.getNextDayMillis;
+import static com.acytoo.newhpcliend.ui.FullscreenActivity.getNextMonthMillis;
+import static com.acytoo.newhpcliend.ui.FullscreenActivity.getNextWeekMillis;
 
 public class DetailActivity extends AppCompatActivity {
 

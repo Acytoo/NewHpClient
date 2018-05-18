@@ -1,19 +1,20 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.ui;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.acytoo.newhpcliend.MyApplication;
+import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.utils.FileManager;
+import com.acytoo.newhpcliend.utils.ImageSaver;
 
 public class PreferenceActivity extends AppCompatActivity {
 
@@ -53,16 +54,21 @@ public class PreferenceActivity extends AppCompatActivity {
     protected void onPostResume() {
         super.onPostResume();
 
-        try {
-            Bitmap bitmap = new ImageSaver(MyApplication.getInstance()).
-                    setFileName("profile.png").
-                    setDirectoryName("images").
-                    load();
+        FileManager fileManager = new FileManager();
+        String loginInfo = fileManager.loadFromInternal(this, "login.yl");
+        if (loginInfo != null){
+            try {
+                Bitmap bitmap = new ImageSaver(MyApplication.getInstance()).
+                        setFileName("profile.png").
+                        setDirectoryName("images").
+                        load();
 
-            img_profile.setImageBitmap(bitmap);
-        } catch (Exception e){
-            Log.d("yllogin", e.toString());
+                img_profile.setImageBitmap(bitmap);
+            } catch (Exception e){
+                Log.d("yllogin", e.toString());
+            }
         }
+
     }
 
 }

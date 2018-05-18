@@ -1,4 +1,4 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.utils;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,13 +9,13 @@ import android.net.NetworkInfo;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.acytoo.newhpcliend.service.MyService;
+
 
 public class NetWorkStateReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("detectNet","网络状态发生变化");
         try {
-            System.out.println("API level 大于21");
             //获得ConnectivityManager对象
             ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -31,13 +31,20 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
                 NetworkInfo networkInfo = connectivityManager.getNetworkInfo(network);
                 //sb.append(networkInfo.getTypeName() + " connect is " + networkInfo.isConnected());
                 string += networkInfo.getTypeName() + " connect is " + networkInfo.isConnected() + "\n";
+                if (networkInfo.isConnected()) {
+                    MyService.wsConnect();
+                    Log.d("netchanged", "internet connected");
+                    //return;
+                }
             }
+            Toast.makeText(context, "failed to connect to the network, you won't receive new message", Toast.LENGTH_LONG).show();
             Toast.makeText(context, string, Toast.LENGTH_LONG).show();
 
             //start the re sign method here.
         } catch (Exception e){
             e.printStackTrace();
         }
+        Log.d("netchanged", "finish the network detector");
     }
 
 }

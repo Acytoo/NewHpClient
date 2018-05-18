@@ -1,22 +1,15 @@
-package com.acytoo.newhpcliend;
+package com.acytoo.newhpcliend.utils;
 
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
-import android.widget.ImageView;
+import android.widget.Toast;
 
-import com.franmontiel.persistentcookiejar.PersistentCookieJar;
-import com.franmontiel.persistentcookiejar.cache.SetCookieCache;
-import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor;
+import com.acytoo.newhpcliend.MyApplication;
+import com.acytoo.newhpcliend.ui.LoginActivity;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -28,7 +21,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-import static com.acytoo.newhpcliend.FileManager.encode;
+import static com.acytoo.newhpcliend.utils.FileManager.encode;
 
 public class HttpManager {
 
@@ -59,23 +52,18 @@ public class HttpManager {
                 .build();
     }
 
-    public void doLogin(String username, String password) {
+    public void doLogin(String sid, String password) {
         FileManager fileManager = new FileManager();
         Log.d("YLjson", "building new httpmanager11111");
         String jsonStr = "{\n" +
-                "    \"stuID\": \"" + username + "\",\n" +
+                "    \"stuID\": \"" + sid + "\",\n" +
                 "    \"password\": \"" + encode(password) + "\"\n" +
                 "}";
         Log.d("YLjson", jsonStr);
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), jsonStr);
 
         Request request = new Request.Builder()
-                //.url("http://baidu.com")
-                //.url("http://hiapk.com/")
-                //.url("http://github.com")
                 .url("http://58.87.90.180:8080/newServer/LoginOfStu")
-                //.url("https://httpbin.org/cookies/set?stuid=KingJoffrey")
-                //.url("https://www.zhihu.com/")
                 .post(body)
                 .build();
 
@@ -85,13 +73,23 @@ public class HttpManager {
         try {
             response = okHttpClient.newCall(request).execute();
             String result = response.body().string();
-            Log.d("ytsave", "result " + result); //json2pojo already explained
             if (result.equals("yes")){
-                Log.d("ytsave", "there are same");
-                fileManager.saveToInternal(MyApplication.getInstance(), "login.yl", "you have logined");
+                fileManager.saveToInternal(MyApplication.getInstance(), "login.yl", sid);
+            }
+            else {
+                LoginActivity.handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        /**
+                         * 此处根据返回值不同进行不同的提醒
+                         */
+                        Toast.makeText(MyApplication.getInstance(), "Fail to login: wrong user password", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         } catch (IOException e) {
             Log.d("ytsave", "catch exception " + e.toString());
+
             e.printStackTrace();
         }
     }
@@ -112,10 +110,10 @@ public class HttpManager {
                 .post(body)
                 .build();
 
-        Response response = null;
+        Response response;
         try {
             response = okHttpClient.newCall(request).execute();
-            Log.d("yllogin", "result:#" + (response.body().string()) + "#"); //json2pojo already explained
+            Log.d("yllogin", "result:#" + (response.body().string()) + "#");
         } catch (IOException e) {
             e.printStackTrace();
             Log.d("yllogin", e.toString());
@@ -166,10 +164,14 @@ public class HttpManager {
                     .build();
             Response response = okHttpClient.newCall(request).execute();
             InputStream is = response.body().byteStream();
-            new ImageSaver(MyApplication.getInstance()).
-                    setFileName("profile.png").
-                    setDirectoryName("images").
-                    save(BitmapFactory.decodeStream(is));
+            Log.d("yllogin", "img size  " + is.read());
+            if (is.read() < 20) {
+                return false;
+            }
+            new ImageSaver(MyApplication.getInstance())
+                    .setFileName("profile.png")
+                    .setDirectoryName("images")
+                    .save(BitmapFactory.decodeStream(is));
             return true;
 
         } catch (IOException e) {

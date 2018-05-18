@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".FullscreenActivity"
+            android:name=".ui.FullscreenActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
             android:theme="@style/FullscreenTheme">
@@ -30,24 +30,61 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.LoginActivity"
             android:label="@string/title_activity_login"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="false"
             android:launchMode="singleInstance" />
 
-        <service
-            android:name=".MyService"
-            android:enabled="true"
-            android:exported="true"
-            android:launchMode="singleInstance" />
+        <activity android:name=".ui.EditPlanActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:finishOnTaskLaunch="false"/>
 
-        <activity android:name=".EditPlanActivity" />
         <activity
-            android:name=".SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:launchMode="singleInstance" />
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="false"/>
 
-        <receiver android:name=".NewAppWidget">
+        <activity
+            android:name=".ui.DetailActivity"
+            android:label="@string/title_activity_detail"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:finishOnTaskLaunch="false"/>
+
+        <activity android:name=".ui.AddPlanActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:finishOnTaskLaunch="false"/>
+
+        <activity android:name=".ui.RegisterActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:finishOnTaskLaunch="false"/>
+
+        <activity
+            android:name=".ui.PreferenceActivity"
+            android:label="@string/title_activity_preference"
+            android:launchMode="singleInstance"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="false"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <receiver android:name=".ui.NewAppWidget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -57,17 +94,18 @@
                 android:resource="@xml/new_app_widget_info" />
         </receiver>
 
-        <activity
-            android:name=".DetailActivity"
-            android:label="@string/title_activity_detail"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".AddPlanActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity
-            android:name=".PreferenceActivity"
-            android:label="@string/title_activity_preference"
-            android:launchMode="singleInstance"
-            android:theme="@style/AppTheme.NoActionBar"/>
+        <service
+            android:name=".service.MyService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":daemon_service" />
+
+        <service android:name=".service.CancelNoticeService"
+            android:enabled="true"
+            android:exported="true"
+            android:process=":cancel_service" />
+
+
     </application>
 
 </manifest>
