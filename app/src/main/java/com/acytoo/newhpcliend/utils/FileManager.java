@@ -14,9 +14,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class FileManager {
 
-    public FileManager(){
-        Log.d("ytsave", "building the filemanner");
-    }
+    public FileManager(){}
 
 
     public void saveToInternal(Context context, String fileName, String content) {

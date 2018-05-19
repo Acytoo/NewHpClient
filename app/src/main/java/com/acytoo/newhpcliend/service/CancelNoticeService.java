@@ -54,9 +54,7 @@ public class CancelNoticeService extends Service {
             }
         }).start();
 
-        Log.d("netchanged", "in cancelService onstartCommand");
         return super.onStartCommand(intent, flags, startId);
-        //return START_STICKY;
     }
 
 

@@ -12,7 +12,10 @@ import com.acytoo.newhpcliend.ui.LoginActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.CookieJar;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
@@ -35,6 +38,9 @@ public class HttpManager {
             super.handleMessage(msg);
             String messge = msg.obj.toString();
             //txt_result.setText(txt_result.getText() + "\n" + msg.obj.toString());
+            /**set the text as daily inspiration
+             *
+             */
         }
     };
 
@@ -202,6 +208,61 @@ public class HttpManager {
             Log.d("yllogin", "degetimg : " + e.toString());
         }
         return null;
+    }
+
+    public void doSimpleGet() {
+
+        Request request = new Request.Builder()
+                .url("https://acytoo.github.io/HPSRC/README.md")
+                .build();
+        Call myCall = okHttpClient.newCall(request);
+        Log.d("slogan", "start the get");
+        myCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                Log.d("slogan", "onResponse");
+
+                final String myResponse = response.body().string(); //string() read the stream, and close it
+
+                Log.d("slogan", myResponse);
+                //updateResult(myResponse);
+
+            }
+        });
+
+    }
+
+    public void syncSlogan(){
+
+        //final Handler sloganHandler = new Handler();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String slogan = "";
+                Request request = new Request.Builder()
+                        .url("https://acytoo.github.io/HPSRC/chaos")
+                        .build();
+                try {
+                    Response response = okHttpClient.newCall(request).execute();
+                    //updateResult(response.body().string());
+                    slogan = response.body().string();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    slogan = "And Climb Is All There Is";
+                }
+                FileManager fileManager = new FileManager();
+                fileManager.saveToInternal(MyApplication.getInstance(), "slogan", slogan);
+
+            }
+        }).start();
+
+
     }
 
 }

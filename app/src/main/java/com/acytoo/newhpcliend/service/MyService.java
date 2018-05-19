@@ -14,6 +14,7 @@ import android.util.Log;
 import com.acytoo.newhpcliend.MyApplication;
 import com.acytoo.newhpcliend.R;
 import com.acytoo.newhpcliend.ui.FullscreenActivity;
+import com.acytoo.newhpcliend.utils.HttpManager;
 import com.acytoo.newhpcliend.utils.MyCookieJar;
 import com.acytoo.newhpcliend.utils.MyDBHandler;
 import com.acytoo.newhpcliend.utils.MyWebSocketListener;
@@ -35,6 +36,7 @@ public class MyService extends Service {
     private boolean interrupted = false;
     private boolean started = false;
     private static MyDBHandler dbHandler;
+    static OkHttpClient client;
 
     NetWorkStateReceiver netWorkStateReceiver;
 
@@ -56,8 +58,8 @@ public class MyService extends Service {
 
         Notification.Builder builder = new Notification.Builder(this);
         builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setContentTitle("KeepAppAlive");
-        builder.setContentText("DaemonService is runing...");
+        builder.setContentTitle("Climb");
+        builder.setContentText("And climb is all there is");
         startForeground(NOTICE_ID,builder.build());
 //         如果觉得常驻通知栏体验不好
 //         可以通过启动CancelNoticeService，将通知移除，oom_adj值不变
@@ -65,7 +67,6 @@ public class MyService extends Service {
         startService(intent);
 
 
-        Log.d("netchanged", "finish create the servive");
 
 
     }
@@ -75,7 +76,7 @@ public class MyService extends Service {
      * @return
      */
 
-    public String getCurrentDate(){
+            public String getCurrentDate(){
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         return df.format(new Date());
     }
@@ -94,13 +95,17 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        Log.d("slogan", "onStartCommand, soSimpleGet");
+        HttpManager httpManager = new HttpManager();
+        httpManager.syncSlogan();
+
         if (netWorkStateReceiver == null) {
             netWorkStateReceiver = new NetWorkStateReceiver();
         }
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(netWorkStateReceiver, filter);
-        Log.d("netchanged", "in the Myservive on startCommod, after register the networkstate receiver");
+
 
         if (!started) {
             started = true;
@@ -123,16 +128,13 @@ public class MyService extends Service {
                 }
             }).start();
         }
-        Log.d("netchanged", "in onstartConmond, after if");
-
         return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
-        Log.d("netchanged", "onDestroy called");
         interrupted = true;
-        //client.dispatcher().executorService().shutdown();
+        client.dispatcher().executorService().shutdown();
         unregisterReceiver(netWorkStateReceiver);
 
         try {
@@ -140,7 +142,6 @@ public class MyService extends Service {
             mManager.cancel(NOTICE_ID);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.d("netchanged", "my service on destroy exception " + e.toString());
         }
 
 
@@ -148,48 +149,42 @@ public class MyService extends Service {
         Intent intent = new Intent(getApplicationContext(),MyService.class);
         startService(intent);
         super.onDestroy();
-        Log.d("netchanged", "finish ondestroy");
     }
 
     public static void output(final String txt){
         String plan = txt.split("&")[1];
         dbHandler.addPlan(new Plans(new Date().getTime(), 7, 0,
                 "websocket", plan, 1,1,1 ));
-        Log.d("planWebTest", "finish writing db");
 
     }
 
     public static void wsConnect(){
 
         final String identifier = MyCookieJar.getLastCookie();
-        Log.d("netchanged", "start the wsConnect serive");
+
         if (identifier != null){
 
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String url = "ws://58.78.90.180:8080/websocket/server/stu_20154444";
-                    //"wss://echo.websocket.org"
-                    WebSocket webSocket;
-                    OkHttpClient client;
+            String url = "ws://58.78.90.180:8080/websocket/server/stu_20154444";
+            //"wss://echo.websocket.org"
+            WebSocket webSocket;
 
-                    Request request = new Request.Builder().url(url).build();
-                    MyWebSocketListener listener = new MyWebSocketListener();
-                    client = new OkHttpClient();
-                    webSocket = client.newWebSocket(request, listener);
 
-                    Log.d("netchanged", "cookies: " + identifier);
-                    //webSocket.send(MyCookieJar.getLastCookie());
+            Request request = new Request.Builder().url(url).build();
+            MyWebSocketListener listener = new MyWebSocketListener();
+            client = new OkHttpClient();
+            webSocket = client.newWebSocket(request, listener);
 
-                    /**
-                     * 一共会有几个cookie?是否过期怎么判断
-                     *
-                     * 过期后如何处理？
-                     * 是根据网址区分
-                     * 掉线处理
-                     */
-                }
-            }).start();
+            Log.d("netchanged", "cookies: " + identifier);
+            //webSocket.send(MyCookieJar.getLastCookie());
+
+            /**
+             * 一共会有几个cookie?是否过期怎么判断
+             *
+             * 过期后如何处理？
+             * 是根据网址区分
+             * 掉线处理
+             */
+
         }
         Log.d("netchanged", "finish the wsConnect serive");
     }

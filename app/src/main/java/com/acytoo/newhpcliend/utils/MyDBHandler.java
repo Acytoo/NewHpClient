@@ -76,7 +76,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
                 COLUMN_ALARM_TIME + " INTEGER " +
                 ");";
         db.execSQL(query);
-        Log.i("really", "here10");//why onCreate not running ? ? ?
         calendar = Calendar.getInstance();
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
     }
@@ -163,7 +162,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
     }
 
     public String getMostImportantToday(long today){
-        Log.i("Alec", "here");
+        //the smaller priority number is, the more important it is.
         String topPlan = "";
         SQLiteDatabase db = getWritableDatabase();
         long tomorrow = today + 24 * 3600 * 1000;
@@ -177,7 +176,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
             c.moveToLast();
             c.moveToNext();
         }
-        Log.i("Alec", topPlan);
         c.close();
         db.close();
         return topPlan;
@@ -195,7 +193,6 @@ public class MyDBHandler extends SQLiteOpenHelper{
         while (!c.isAfterLast()){
             if (c.getString(c.getColumnIndex(COLUMN_TODOS)) != null){
                 datePlans += c.getString(c.getColumnIndex(COLUMN_TODOS)) + "\n";
-                //datePlans += "\n";
             }
             c.moveToNext();
         }
@@ -224,7 +221,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
     }
 
     public String getSomePlans(long startTime, long endTime){
-        String dbString = "";
+        StringBuilder stringBuilder = new StringBuilder();
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME + " >= " + startTime + " AND "
                 + COLUMN_PLAN_TIME + " < " + endTime +
@@ -234,44 +231,73 @@ public class MyDBHandler extends SQLiteOpenHelper{
         while (!c.isAfterLast()){
             if (c.getString(c.getColumnIndex(COLUMN_PLAN_TIME)) != null){
                 Calendar tempca = Calendar.getInstance();
-                SimpleDateFormat ndf = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
+                SimpleDateFormat ndf = new SimpleDateFormat("MM/dd", Locale.CHINA);
                 tempca.setTimeInMillis(c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)));
-                dbString += ndf.format(tempca.getTime()) + " " + c.getString(c.getColumnIndex(COLUMN_TODOS)) + "\n";
+                stringBuilder.append(ndf.format(tempca.getTime())).append(" ")
+                        .append(c.getString(c.getColumnIndex(COLUMN_TODOS))).append("\n");
             }
             c.moveToNext();
         }
         c.close();      //Close the cursor and the database
         db.close();
-        return dbString;
+        return stringBuilder.toString();
     }
+
+
+    /**
+     * Usually this method return the String for a single day
+     *  format: priority hour:minute todos source done
+     * @param startTime
+     * @param endTime
+     * @return
+     */
+
     public String getSomePlansNoDate(long startTime, long endTime){
-        String dbString = "";
+        //usually this is the plan of a single day
+        StringBuilder stringBuilder = new StringBuilder();
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME + " >= " + startTime + " AND "
                 + COLUMN_PLAN_TIME + " < " + endTime +
-                " ORDER BY "+ COLUMN_PLAN_TIME + " ASC;";
+                " ORDER BY "+ COLUMN_PRIORITY + " ASC;";
         Cursor c = db.rawQuery(query, null);
         //Move the cursor to the first row in your database
         c.moveToFirst();
         while (!c.isAfterLast()){
             if (c.getString(c.getColumnIndex(COLUMN_PLAN_TIME)) != null){
-                dbString += c.getString(c.getColumnIndex(COLUMN_TODOS)) + "\n";
+                Calendar tempca = Calendar.getInstance();
+                tempca.setTimeInMillis(c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)));
+                SimpleDateFormat timedf = new SimpleDateFormat("h:mm a", Locale.CHINA);
+                stringBuilder.append(String.format("%1s %tR %-9s %3s %1s\n",
+                        c.getInt(c.getColumnIndex(COLUMN_PRIORITY)),
+                        //timedf.format(tempca.getTime()),
+                        tempca,
+                        c.getString(c.getColumnIndex(COLUMN_TODOS)),
+                        c.getString(c.getColumnIndex(COLUMN_SOURCE)),
+                        c.getInt(c.getColumnIndex(COLUMN_DONE))));
+
+
+//                stringBuilder.append(c.getInt(c.getColumnIndex(COLUMN_PRIORITY))).append(" ")
+//                        .append(timedf.format(tempca.getTime())).append(" ")
+//                        .append(c.getString(c.getColumnIndex(COLUMN_TODOS))).append(" ")
+//                        .append(c.getString(c.getColumnIndex(COLUMN_SOURCE))).append(" ")
+//                        .append(c.getInt(c.getColumnIndex(COLUMN_DONE))).append("\n");
+
             }
             c.moveToNext();
         }
         c.close();      //Close the cursor and the database
         db.close();
-        return dbString;
+        return stringBuilder.toString();
     }
 
     /**
-     * Format: [id]#[priority]#[date] [plan]&, so I can split the result String
+     * Format: [id]#[priority]#[date]#[plan]#[source]#[done]&, so I can split the result String
      * @param startTime
      * @param endTime
      * @return
      */
     public String getSomePlansSpecialFormat(long startTime, long endTime){
-        String dbString = "";
+        StringBuilder stringBuilder = new StringBuilder();
         SQLiteDatabase db = getWritableDatabase();
         String query = "SELECT * FROM " + TABLE_PLANS + " WHERE " + COLUMN_PLAN_TIME + " >= " + startTime + " AND "
                 + COLUMN_PLAN_TIME + " < " + endTime +
@@ -284,16 +310,19 @@ public class MyDBHandler extends SQLiteOpenHelper{
                 Calendar tempca = Calendar.getInstance();
                 SimpleDateFormat ndf = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
                 tempca.setTimeInMillis(c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)));
-                dbString += c.getInt(c.getColumnIndex(COLUMN_ID)) + "#" +
-                        c.getInt(c.getColumnIndex(COLUMN_PRIORITY)) + "#" +
-                        ndf.format(tempca.getTime()) +" " +
-                        c.getString(c.getColumnIndex(COLUMN_TODOS)) + "&";
+                stringBuilder.append(c.getInt(c.getColumnIndex(COLUMN_ID))).append("#")
+                        .append(c.getInt(c.getColumnIndex(COLUMN_PRIORITY))).append("#")
+                        .append(ndf.format(tempca.getTime())).append("#")
+                        .append(c.getString(c.getColumnIndex(COLUMN_TODOS))).append("#")
+                        .append(c.getString(c.getColumnIndex(COLUMN_SOURCE))).append("#")
+                        .append(c.getInt(c.getColumnIndex(COLUMN_DONE))).append("#_&");
+
             }
             c.moveToNext();
         }
         c.close();      //Close the cursor and the database
         db.close();
-        return dbString;
+        return stringBuilder.toString();
     }
 
 

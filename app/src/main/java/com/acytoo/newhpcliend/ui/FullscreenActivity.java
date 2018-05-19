@@ -71,11 +71,10 @@ GestureDetector.OnDoubleTapListener{
 
     private GestureDetectorCompat gestureDetector;
     private MyDBHandler dbHandler;
-    private TextView plansText;
+    private TextView txt_plan_board;
     private SimpleDateFormat df;
     private Calendar calendar;
     private static Calendar caForEnd;
-    private TextView dateToday;
     private Level level;
     private boolean login;
 
@@ -84,7 +83,6 @@ GestureDetector.OnDoubleTapListener{
         DAY, WEEK, MONTH
     }
 
-    MyService myNewService;
 
 
     @Override
@@ -111,8 +109,7 @@ GestureDetector.OnDoubleTapListener{
         this.gestureDetector = new GestureDetectorCompat(this, this);
         gestureDetector.setOnDoubleTapListener(this);
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
-        plansText = findViewById(R.id.plansText);
-        dateToday = findViewById(R.id.showDate);
+        txt_plan_board = findViewById(R.id.txt_plan_board);
         calendar = Calendar.getInstance();
         caForEnd = Calendar.getInstance();
         calendar.setTime(new Date());
@@ -124,20 +121,17 @@ GestureDetector.OnDoubleTapListener{
         level = Level.DAY;
         login = false;
         startMyService();
-        Log.d("netchanged", "after start the service");
         showNotification();
 
-        //Log.d("ytsave", "why stoped?");
+
 
 
     }
 
     @Override
     protected void onStart() {
+
         super.onStart();
-        //String todayInfo = this.getString(R.string.todayInfo) + " " + df.format(new Date());
-        String todayInfo = df.format(new Date());
-        dateToday.setText(todayInfo);
         Log.i("testActivity", "onStart");
         setTitle();
         String plans;
@@ -148,32 +142,30 @@ GestureDetector.OnDoubleTapListener{
         } else{
             plans = dbHandler.getSomePlans(calendar.getTimeInMillis(),getNextMonthMillis(calendar.getTimeInMillis()));
         }
-        plansText.setText(plans);
+        txt_plan_board.setText(plans);
 
         FileManager fileManager = new FileManager();
-        //fileManager.saveToInternal(this, "login.yl", "fuck you asshole");
         String loginInfo = fileManager.loadFromInternal(this, "login.yl");
         if (loginInfo != null) {
             login = true;
         }
-
+        String slogan = fileManager.loadFromInternal(this, "slogan");
+        if (slogan != null) {
+            TextView txt_the_climb = findViewById(R.id.txt_the_climb);
+            txt_the_climb.setText(slogan);
+        }
 
 
     }
 
     private void startMyService(){
 
-            //Start the service
             final Intent serviceIntent = new Intent(FullscreenActivity.this, MyService.class);
-            Log.d("netchanged", "afetr build intent ");
             startService(serviceIntent);
-            Log.d("netchanged", "sfter start the service");
-
-            //The service should started
-
     }
 
     private void showNotification() {
+
         try {
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, FullscreenActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
             NotificationCompat.Builder builder = new NotificationCompat.Builder(this, null)
@@ -251,7 +243,7 @@ GestureDetector.OnDoubleTapListener{
 
     public void setTitle(){
 
-        TextView dateToShow = findViewById(R.id.dateToShow);
+        TextView txt_plan_date = findViewById(R.id.txt_plan_date);
         String dateOfShowingPlans;
         if (level == Level.DAY) {
             dateOfShowingPlans = df.format(calendar.getTime()) + this.getString(R.string.dateToShow);
@@ -264,7 +256,7 @@ GestureDetector.OnDoubleTapListener{
             caForEnd.setTimeInMillis(getNextMonthMillis(calendar.getTimeInMillis()));
             dateOfShowingPlans = df.format(calendar.getTime()) + " - " + df.format(caForEnd.getTime());
         }
-        dateToShow.setText(dateOfShowingPlans);
+        txt_plan_date.setText(dateOfShowingPlans);
     }
 
 
@@ -288,7 +280,6 @@ GestureDetector.OnDoubleTapListener{
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        //testMessage.setText("onDoubleTap");
         return true;
     }
 

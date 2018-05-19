@@ -34,7 +34,7 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
                 if (networkInfo.isConnected()) {
                     MyService.wsConnect();
                     Log.d("netchanged", "internet connected");
-                    //return;
+                    return;
                 }
             }
             Toast.makeText(context, "failed to connect to the network, you won't receive new message", Toast.LENGTH_LONG).show();

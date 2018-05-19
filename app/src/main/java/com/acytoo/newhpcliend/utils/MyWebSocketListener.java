@@ -11,8 +11,6 @@ import static com.acytoo.newhpcliend.service.MyService.output;
 
 public class MyWebSocketListener extends WebSocketListener {
 
-    private WebSocket webSocket;
-
     public MyWebSocketListener() {
         super();
     }
@@ -20,7 +18,7 @@ public class MyWebSocketListener extends WebSocketListener {
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
         super.onOpen(webSocket, response);
-        //webSocket.send("tested Plans");
+
     }
 
 
