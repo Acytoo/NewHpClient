@@ -5,10 +5,14 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acytoo.newhpcliend.MyApplication;
+import com.acytoo.newhpcliend.ui.FullscreenActivity;
 import com.acytoo.newhpcliend.ui.LoginActivity;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -213,10 +217,10 @@ public class HttpManager {
     public void doSimpleGet() {
 
         Request request = new Request.Builder()
-                .url("https://acytoo.github.io/HPSRC/README.md")
+                .url("http://api.openweathermap.org/data/2.5/weather?q=ShenYang&APPID=c1f7296fd211c8f4c47be2745aca8714")
                 .build();
         Call myCall = okHttpClient.newCall(request);
-        Log.d("slogan", "start the get");
+        Log.d("ytweather", "start the get");
         myCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -225,16 +229,78 @@ public class HttpManager {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
-                Log.d("slogan", "onResponse");
+                Log.d("ytweather", "onResponse");
 
                 final String myResponse = response.body().string(); //string() read the stream, and close it
 
-                Log.d("slogan", myResponse);
+                Log.d("ytweather", myResponse);
                 //updateResult(myResponse);
+                Gson gson = new Gson();
+                java.lang.reflect.Type type = new TypeToken<JsonBean>() {}.getType();
+                final JsonBean jsonBean = gson.fromJson(myResponse, type);
+                double temperature = jsonBean.getMain().getTemp() - 273.15;
+                //Log.d("ytweather", "the weather is " + temperature);
 
             }
         });
 
+    }
+
+//    public void getTemperature() {
+//
+//        Request request = new Request.Builder()
+//                .url("http://api.openweathermap.org/data/2.5/weather?q=ShenYang&APPID=c1f7296fd211c8f4c47be2745aca8714")
+//                .build();
+//        Call myCall = okHttpClient.newCall(request);
+//        Log.d("ytweather", "start the get");
+//        myCall.enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                call.cancel();
+//                Log.d("ytweather", "start the get cancel");
+//            }
+//
+//            @Override
+//            public void onResponse(Call call, final Response response) throws IOException {
+//                final String myResponse = response.body().string(); //string() read the stream, and close it
+//                Gson gson = new Gson();
+//                java.lang.reflect.Type type = new TypeToken<JsonBean>() {}.getType();
+//                final JsonBean jsonBean = gson.fromJson(myResponse, type);
+//                final double temperature = jsonBean.getMain().getTemp() - 273.15;
+//                Log.d("ytweather", "start the get " + temperature);
+
+//                FullscreenActivity.temperatureHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Log.d("ytweather", "shenyang" + temperature);
+//                        FullscreenActivity.txt_temperature.setText("ShenYang : " + temperature);
+//                    }
+//                });
+//
+//            }
+//        });
+//
+//    }
+
+    public String getTemperature(){
+
+        String weather;
+        Request request = new Request.Builder()
+                .url("http://api.openweathermap.org/data/2.5/weather?q=ShenYang&APPID=c1f7296fd211c8f4c47be2745aca8714")
+                .build();
+        try {
+            Response response = okHttpClient.newCall(request).execute();
+            final String myResponse = response.body().string(); //string() read the stream, and close it
+            Gson gson = new Gson();
+            java.lang.reflect.Type type = new TypeToken<JsonBean>() {}.getType();
+            final JsonBean jsonBean = gson.fromJson(myResponse, type);
+            weather = jsonBean.getWeather().get(0).getMain() + " " + (jsonBean.getMain().getTemp() - 273.15) + " ℃";
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            weather = " no data";
+        }
+        return weather;
     }
 
     public void syncSlogan(){

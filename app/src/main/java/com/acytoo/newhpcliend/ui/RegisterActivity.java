@@ -95,25 +95,23 @@ public class RegisterActivity extends AppCompatActivity {
                 new SharedPrefsCookiePersistor(MyApplication.getInstance()));
         aaoManager= new HttpManager(aaoCookieJar);
         imgHandler = new Handler();
-        Log.d("yllogin", "started register");
         new Thread(new Runnable() {
             @Override
             public void run() {
                 final Bitmap capthaImg = aaoManager.getCaptha("https://zhjw.neu.edu.cn/ACTIONVALIDATERANDOMPICTURE.APPPROCESS?id=");
                 if (capthaImg == null){
-                    Log.d("yllogin", "it's fucking null");
+                    Toast.makeText(MyApplication.getInstance(), "No internet connection!", Toast.LENGTH_SHORT).show();
                 }
                 imgHandler.post(new Runnable() {
                     @Override
                     public void run() {
                         img_captha.setImageBitmap(capthaImg);
-                        Log.d("yllogin", "get captha : " + capthaImg.toString());
                     }
                 });
             }
         }).start();
 
-        Log.d("yllogin", "get captha1");
+
 
 
     }
@@ -193,7 +191,6 @@ public class RegisterActivity extends AppCompatActivity {
             // TODO: attempt authentication against a network service.
             try {
                 //send json data
-                Log.d("yllogin", mId + mCaptha + mPassword+mUserName);
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

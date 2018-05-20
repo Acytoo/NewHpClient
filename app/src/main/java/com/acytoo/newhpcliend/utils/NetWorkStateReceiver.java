@@ -48,3 +48,4 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
     }
 
 }
+

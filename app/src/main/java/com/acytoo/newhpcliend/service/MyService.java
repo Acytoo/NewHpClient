@@ -95,9 +95,13 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        //FullscreenActivity.txt_temperature.setText("qwertyuio");
+
         Log.d("slogan", "onStartCommand, soSimpleGet");
         HttpManager httpManager = new HttpManager();
         httpManager.syncSlogan();
+        //httpManager.getTemperature();
+        //changedTemp();
 
         if (netWorkStateReceiver == null) {
             netWorkStateReceiver = new NetWorkStateReceiver();
@@ -188,4 +192,5 @@ public class MyService extends Service {
         }
         Log.d("netchanged", "finish the wsConnect serive");
     }
+
 }
