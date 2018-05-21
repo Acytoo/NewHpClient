@@ -44,9 +44,12 @@ public class ImageSaver {
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = new FileOutputStream(createFile());
+            //Log.d("yllogin", "size " + bitmapImage.getDensity());
             bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+            Log.d("yllogin", "finish save");
         } catch (Exception e) {
             e.printStackTrace();
+            Log.d("yllogin", "1234123421341234123" + e.toString());
         } finally {
             try {
                 if (fileOutputStream != null) {
@@ -54,23 +57,27 @@ public class ImageSaver {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.d("yllogin", e.toString());
             }
         }
     }
 
     @NonNull
     private File createFile() {
+
         File directory;
         if(external){
+            Log.d("yllogin", "finsih createfile789");
             directory = getAlbumStorageDir(directoryName);
         }
         else {
+            Log.d("yllogin", "finsih createfile123");
             directory = context.getDir(directoryName, Context.MODE_PRIVATE);
         }
         if(!directory.exists() && !directory.mkdirs()){
-            Log.e("ImageSaver","Error creating directory " + directory);
+            Log.e("yllogin","Error creating directory " + directory);
         }
-
+        Log.d("yllogin", "finsih createfile");
         return new File(directory, fileName);
     }
 

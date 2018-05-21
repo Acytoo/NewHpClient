@@ -5,7 +5,7 @@
     android:id="@+id/planInput"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0099cc"
+    android:background="#4c4c4c"
 
     android:focusable="true"
     android:focusableInTouchMode="true"
@@ -21,10 +21,10 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="13dp"
         android:text="@string/date"
-        android:textColor="#99ff99"
         android:textSize="20sp"
+        android:textColor="#3fffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -39,14 +39,14 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="13dp"
         android:ems="10"
         android:gravity="center"
         android:inputType="date"
-        android:textColor="#99ff99"
+        android:textColor="#3fffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.384"
+        app:layout_constraintHorizontal_bias="0.277"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.017" />
@@ -58,11 +58,11 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="13dp"
         android:ems="10"
         android:gravity="center"
         android:inputType="time"
-        android:textColor="#99ff99"
+        android:textColor="#3fffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.966"
@@ -71,11 +71,13 @@
         app:layout_constraintVertical_bias="0.017" />
 
 
+
     <!--android:inputType="date"
 
     android:inputType="none" means there is no keyboard pop up
     but it not working now, I will change the input type in java files
     -->
+
 
 
     <TextView
@@ -88,26 +90,27 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="Priority"
-        android:textColor="#99ff99"
         android:textSize="20sp"
+        android:textColor="#3fffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.254" />
+        app:layout_constraintVertical_bias="0.26" />
 
     <Spinner
         android:id="@+id/prioritySpinner"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:textColor="#3fffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.321"
+        app:layout_constraintHorizontal_bias="0.37"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.262" />
@@ -121,19 +124,19 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/plan"
-        android:textColor="#99ff99"
+        android:textColor="#3fffff"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.136" />
+        app:layout_constraintVertical_bias="0.15" />
 
     <EditText
         android:id="@+id/editPlan"
-        android:layout_width="300dp"
-        android:layout_height="57dp"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -141,13 +144,14 @@
         android:ems="10"
         android:gravity="center"
         android:inputType="textPersonName"
-        android:textColor="#99ff99"
+        android:textColor="#3fffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.952"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.14" />
+
 
     <Button
         android:id="@+id/addButton"
@@ -158,7 +162,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/add"
-        android:textColor="#99ff99"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -175,7 +178,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="@string/delete"
-        android:textColor="#99ff99"
+        android:textColor="#df0085"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.371"
@@ -192,7 +195,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Show All plans"
-        android:textColor="#99ff99"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.971"
@@ -209,7 +211,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:textColor="#99ff99"
+        android:textColor="#3fffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -225,6 +227,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:textColor="#3fffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.816"
@@ -241,6 +244,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Done?"
+        android:textColor="#3fffff"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.567"
@@ -257,9 +261,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="AotuDelete"
+        android:textColor="#df0085"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.135"
+        app:layout_constraintHorizontal_bias="0.06"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.36" />
@@ -272,14 +277,15 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:textColor="#df0085"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.441"
+        app:layout_constraintHorizontal_bias="0.365"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.36" />
 
-    <Button
+    <!--Button
         android:id="@+id/autoDeleteButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -291,7 +297,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent" /-->
 
 
 </android.support.constraint.ConstraintLayout>

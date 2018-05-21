@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.utils.MyArrayAdapter;
 import com.acytoo.newhpcliend.utils.MyDBHandler;
 import com.acytoo.newhpcliend.utils.Plans;
 
@@ -56,7 +57,7 @@ public class AddPlanActivity extends AppCompatActivity {
     private int planPriority;
     private Switch doneSwitch;
     private Switch autoDeleteSwitch;
-    private Button autoDeleteButton;
+   // private Button autoDeleteButton;
     enum DoneFlag {
         False, True
     }
@@ -112,17 +113,23 @@ public class AddPlanActivity extends AppCompatActivity {
         planBoard = findViewById(R.id.planBoard);
         doneSwitch = findViewById(R.id.doneSwitch);
         autoDeleteSwitch = findViewById(R.id.autoDeleteSwitch);
-        autoDeleteButton = findViewById(R.id.autoDeleteButton);
+        //autoDeleteButton = findViewById(R.id.autoDeleteButton);
 
         dbHandler = new MyDBHandler(this, null, null, 2);
         dateInput.setText(df.format(calendar.getTime()));
         timeInput.setText(timedf.format(calendar.getTime()));
         prioritySpinner = findViewById(R.id.prioritySpinner);
+
+
+/*
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.priority_items, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        prioritySpinner.setAdapter(adapter);
+        prioritySpinner.setAdapter(adapter);*/
 
+        String[] mStringArray=getResources().getStringArray(R.array.priority_items);
+        ArrayAdapter<String> arrayAdapter = new MyArrayAdapter(AddPlanActivity.this,mStringArray);
+        prioritySpinner.setAdapter(arrayAdapter);
         prioritySpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -137,13 +144,15 @@ public class AddPlanActivity extends AppCompatActivity {
                 }
         );
 
+
+
         addButton.setOnClickListener(
                 new Button.OnClickListener(){
                     @Override
                     public void onClick(View v) {
                         if (legal()){
                             planTimeInMillis = calendar.getTimeInMillis();
-                            Plans plan = new Plans(planTimeInMillis, planPriority, new Date().getTime(), "self",
+                            Plans plan = new Plans(planTimeInMillis, planPriority, new Date().getTime(), "自己",
                                     planInput.getText().toString(),
                                     done.ordinal(), autoDelete.ordinal(), 0);
                             dbHandler.addPlan(plan);
@@ -243,15 +252,15 @@ public class AddPlanActivity extends AppCompatActivity {
                     }
                 }
         );
-
-        autoDeleteButton.setOnClickListener(
-                new Button.OnClickListener(){
-                    @Override
-                    public void onClick(View v) {
-                        dbHandler.autoDelete();
-                    }
-                }
-        );
+//
+//        autoDeleteButton.setOnClickListener(
+//                new Button.OnClickListener(){
+//                    @Override
+//                    public void onClick(View v) {
+//                        dbHandler.autoDelete();
+//                    }
+//                }
+//        );
 
     }
 

@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.acytoo.newhpcliend.R;
+import com.acytoo.newhpcliend.utils.MyArrayAdapter;
 import com.acytoo.newhpcliend.utils.MyDBHandler;
 import com.acytoo.newhpcliend.utils.Plans;
 
@@ -97,11 +98,20 @@ public class EditPlanActivity extends AppCompatActivity {
 
         dbHandler = new MyDBHandler(this, null, null, 2);
 
+
+
         prioritySpinner = findViewById(R.id.prioritySpinner);
+        /*
+
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.priority_items, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        prioritySpinner.setAdapter(adapter);
+        prioritySpinner.setAdapter(adapter);*/
+        String[] mStringArray=getResources().getStringArray(R.array.priority_items);
+        ArrayAdapter<String> arrayAdapter = new MyArrayAdapter(EditPlanActivity.this,mStringArray);
+        prioritySpinner.setAdapter(arrayAdapter);
+
+
 
         init(id);
 

@@ -23,6 +23,9 @@ import static com.acytoo.newhpcliend.ui.FullscreenActivity.getNextDayMillis;
 import static com.acytoo.newhpcliend.ui.FullscreenActivity.getNextMonthMillis;
 import static com.acytoo.newhpcliend.ui.FullscreenActivity.getNextWeekMillis;
 
+/**
+ * 显示日程的详细信息， 由FullScreenActivity调用， 页面为RecyclerView
+ */
 public class DetailActivity extends AppCompatActivity {
 
     private SimpleDateFormat df;

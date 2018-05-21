@@ -206,8 +206,9 @@ public class RegisterActivity extends AppCompatActivity {
                         aaoManager.loginAAO(mId, mPassword, mCaptha);
 
                         if (aaoManager.doGetImage("https://zhjw.neu.edu.cn/ACTIONDSPUSERPHOTO.APPPROCESS")) {
-                            Log.d("yllogin", "get profile and start to register to our own server");
+                            //Log.d("yllogin", "get profile and start to register to our own server");
                             aaoManager.doRegister(mId, mUserName, mPassword, mCaptha);
+                            aaoManager.doLogin(mId, mPassword);
                         }
                         else {
                             imgHandler.post(new Runnable() {

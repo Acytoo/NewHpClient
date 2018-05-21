@@ -267,20 +267,22 @@ public class MyDBHandler extends SQLiteOpenHelper{
                 Calendar tempca = Calendar.getInstance();
                 tempca.setTimeInMillis(c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)));
                 SimpleDateFormat timedf = new SimpleDateFormat("h:mm a", Locale.CHINA);
-                stringBuilder.append(String.format("\t%1s \t %tR \t %-7s \t %-5s \t %1s \n",
-                        c.getInt(c.getColumnIndex(COLUMN_PRIORITY)),
-                        //timedf.format(tempca.getTime()),
-                        tempca,
-                        c.getString(c.getColumnIndex(COLUMN_TODOS)),
-                        c.getString(c.getColumnIndex(COLUMN_SOURCE)),
-                        c.getInt(c.getColumnIndex(COLUMN_DONE))));
+
+//                stringBuilder.append(String.format("\t%1s \t %tR \t %-7s \t %-5s \t %1s \n",
+//                        c.getInt(c.getColumnIndex(COLUMN_PRIORITY)),
+//                        //timedf.format(tempca.getTime()),
+//                        tempca,
+//                        c.getString(c.getColumnIndex(COLUMN_TODOS)),
+//                        c.getString(c.getColumnIndex(COLUMN_SOURCE)),
+//                        c.getInt(c.getColumnIndex(COLUMN_DONE))));
 
 
-//                stringBuilder.append(c.getInt(c.getColumnIndex(COLUMN_PRIORITY))).append(" ")
-//                        .append(timedf.format(tempca.getTime())).append(" ")
-//                        .append(c.getString(c.getColumnIndex(COLUMN_TODOS))).append(" ")
-//                        .append(c.getString(c.getColumnIndex(COLUMN_SOURCE))).append(" ")
-//                        .append(c.getInt(c.getColumnIndex(COLUMN_DONE))).append("\n");
+                stringBuilder//.append(c.getInt(c.getColumnIndex(COLUMN_PRIORITY))).append(" ")
+                        .append(timedf.format(tempca.getTime())).append(" ")
+                        .append(c.getString(c.getColumnIndex(COLUMN_TODOS))).append(" ")
+                        //.append(c.getString(c.getColumnIndex(COLUMN_SOURCE))).append(" ")
+                        //.append(c.getInt(c.getColumnIndex(COLUMN_DONE)))
+                        .append("\n");
 
             }
             c.moveToNext();

@@ -158,7 +158,7 @@ public class MyService extends Service {
     public static void output(final String txt){
         String plan = txt.split("&")[1];
         dbHandler.addPlan(new Plans(new Date().getTime(), 7, 0,
-                "websocket", plan, 1,1,1 ));
+                "指导员", plan, 1,1,1 ));
 
     }
 

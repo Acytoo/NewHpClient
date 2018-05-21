@@ -27,6 +27,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
+import okhttp3.internal.http.RealResponseBody;
 
 import static com.acytoo.newhpcliend.utils.FileManager.encode;
 
@@ -173,15 +175,18 @@ public class HttpManager {
                     .url(url)
                     .build();
             Response response = okHttpClient.newCall(request).execute();
-            InputStream is = response.body().byteStream();
-            Log.d("yllogin", "img size  " + is.read());
-            if (is.read() < 20) {
-                return false;
-            }
+            ResponseBody responseBody = response.body();
+            InputStream is = responseBody.byteStream();
+//            Log.d("yllogin", "img size  " + is.read());
+//            if (is.read() < 20) {
+//                return false;
+//            }
+//            Log.d("yllogin", "img size  again " + is.read());
             new ImageSaver(MyApplication.getInstance())
                     .setFileName("profile.png")
                     .setDirectoryName("images")
                     .save(BitmapFactory.decodeStream(is));
+            Log.d("yllogin", "inage savexd");
             return true;
 
         } catch (IOException e) {
