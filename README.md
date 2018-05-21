@@ -11,7 +11,7 @@
 ----
 以下为一些截图
 
-更多截图请前往img（[screen shots](https://github.com/Acytoo/NewHpClient/tree/master/imgs, "img")）
+更多截图请前往img（[screen shots](https://github.com/Acytoo/NewHpClient/tree/master/imgs, "img"))
 
 ![image](http://github.com/Acytoo/NewHpClient/tree/master/imgs/Screenshot_20180522-010701.png)
 ![image](http://github.com/Acytoo/NewHpClient/tree/master/imgs/Screenshot_20180522-010612.png)
