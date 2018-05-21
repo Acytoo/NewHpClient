@@ -7,7 +7,7 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ui.DetailActivity"
     android:orientation="vertical"
-    android:background="#0099cc"
+    android:background="#000000"
     tools:showIn="@layout/activity_detail">
 
     <TextView

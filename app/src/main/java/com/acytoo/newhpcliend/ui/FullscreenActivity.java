@@ -18,12 +18,14 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Layout;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -88,6 +90,8 @@ GestureDetector.OnDoubleTapListener{
     public Handler temperatureHandler;
     private TextView txt_temperature;
     private TextView txt_welcome;
+    private int color;
+    private ConstraintLayout layout;
 
 
 
@@ -130,6 +134,9 @@ GestureDetector.OnDoubleTapListener{
         super.onCreate(savedInstanceState);
         Log.i("testActivity", "onCreate");
         setContentView(R.layout.activity_fullscreen);
+        layout = findViewById(R.id.main_layout);
+        color = 0xff000000;
+
         init();
 
         temperatureHandler = new Handler();
@@ -143,12 +150,10 @@ GestureDetector.OnDoubleTapListener{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Log.d("ytuithread", "start running");
                             txt_temperature.setText(weather);
                         }
                     });
                 }catch (Exception e) {
-                    Log.d("ytuithread", e.toString());
                     e.printStackTrace();
                 }
             }
@@ -242,6 +247,8 @@ GestureDetector.OnDoubleTapListener{
     protected void onStart() {
 
         super.onStart();
+        layout.setBackgroundColor(color);
+        Log.d("color", "color is " + color);
         Log.i("testActivity", "onStart");
         setTitle();
         String plans;
@@ -490,19 +497,31 @@ GestureDetector.OnDoubleTapListener{
                 if (moveX > 0) {
                     if (level == Level.DAY) {
                         calendar.add(Calendar.DATE, 1);
+                        color += 0x0000002f;
+                        //color = (color + 0x0000002f) % 0xffffffff;
                     } else if (level == Level.WEEK) {
                         calendar.add(Calendar.WEEK_OF_YEAR, 1);
+                        color += 0x00002f00;
+                        //color = (color + 0x00000f0f) % 0xffffffff;
                     } else {
                         calendar.add(Calendar.MONTH, 1);
+                        color += 0x002f0000;
+                        //color = (color + 0x000f0f0f) % 0xffffffff;
                     }
                     break;
                 } else {
                     if (level == Level.DAY) {
                         calendar.add(Calendar.DATE, -1);
+                        color -= 0x0000002f;
+                        //color = (color + 0xffffffe0) % 0xffffffff;
                     } else if (level == Level.WEEK) {
                         calendar.add(Calendar.WEEK_OF_YEAR, -1);
+                        color -= 0x00002f00;
+                        //color = (color + 0xfffff0f0) % 0xffffffff;
                     } else {
                         calendar.add(Calendar.MONTH, -1);
+                        color -= 0x002f0000;
+                        //color = (color + 0xfff0f0f0) % 0xffffffff;
                     }
                     break;
                 }

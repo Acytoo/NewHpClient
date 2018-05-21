@@ -168,18 +168,25 @@ public class MyService extends Service {
 
         if (identifier != null){
 
-            String url = "ws://58.78.90.180:8080/websocket/server/stu_20154444";
+            String url = "ws://58.87.90.180:8080/newServer/websocket/server/stu_20154479";
+            String url1 = "ws://58.87.90.180:8080/newServer/websocket/server/";
             //"wss://echo.websocket.org"
             WebSocket webSocket;
 
+            //String identifiter = MyCookieJar.getLastCookie();
 
-            Request request = new Request.Builder().url(url).build();
+            Log.d("wsconnect", identifier);
+            Request request = new Request.Builder().url(url1 + identifier).build();
+            //Request request = new Request.Builder().url("ws://echo.websocket.org").build();
             MyWebSocketListener listener = new MyWebSocketListener();
             client = new OkHttpClient();
             webSocket = client.newWebSocket(request, listener);
 
-            Log.d("netchanged", "cookies: " + identifier);
-            //webSocket.send(MyCookieJar.getLastCookie());
+            Log.d("wsconnect", "cookies: " + identifier);
+            //webSocket.send("hello");
+            //webSocket.request();
+            //Log.d("wsconnect", "queueSize " + webSocket.queueSize());
+            Log.d("wsconnect", "sent");
 
             /**
              * 一共会有几个cookie?是否过期怎么判断

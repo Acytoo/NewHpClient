@@ -114,7 +114,8 @@ public class MyCookieJar implements CookieJar {
             }
             fileInputStream.close();
             coo = sb.toString();
-            return "_" + coo.split("~")[0] + "_" + coo.split("~")[1];
+            //return coo.split("~")[0] + "_" + coo.split("~")[1];
+            return coo.split("~")[0];
         } catch (Exception e) {
             e.printStackTrace();
             Log.d("netchanged", e.toString());

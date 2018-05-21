@@ -267,7 +267,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
                 Calendar tempca = Calendar.getInstance();
                 tempca.setTimeInMillis(c.getLong(c.getColumnIndex(COLUMN_PLAN_TIME)));
                 SimpleDateFormat timedf = new SimpleDateFormat("h:mm a", Locale.CHINA);
-                stringBuilder.append(String.format("%1s %tR %-9s %3s %1s\n",
+                stringBuilder.append(String.format("\t%1s \t %tR \t %-7s \t %-5s \t %1s \n",
                         c.getInt(c.getColumnIndex(COLUMN_PRIORITY)),
                         //timedf.format(tempca.getTime()),
                         tempca,
@@ -287,6 +287,7 @@ public class MyDBHandler extends SQLiteOpenHelper{
         }
         c.close();      //Close the cursor and the database
         db.close();
+        Log.d("ytformat", stringBuilder.toString());
         return stringBuilder.toString();
     }
 

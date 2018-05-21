@@ -1,6 +1,7 @@
 package com.acytoo.newhpcliend.utils;
 
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import okhttp3.Response;
 import okhttp3.WebSocket;
@@ -30,12 +31,14 @@ public class MyWebSocketListener extends WebSocketListener {
     @Override
     public void onMessage(WebSocket webSocket, String text) {
         super.onMessage(webSocket, text);
+        Log.d("wsconnect", "wsreceive :" + text);
         output("Receiving :&" + text);
     }
 
     @Override
     public void onMessage(WebSocket webSocket, ByteString bytes) {
         super.onMessage(webSocket, bytes);
+        Log.d("wsconnect", "wsreceive :" + bytes);
         output("Receiving :&" + bytes.hex());
     }
 

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0099cc"
+    android:id="@+id/main_layout"
     tools:context=".ui.FullscreenActivity">
 
 
@@ -34,7 +35,7 @@
         android:layout_marginTop="8dp"
         android:gravity="start"
         android:text="not login yet"
-        android:layout_marginLeft="7dp"
+        android:layout_marginStart="7dp"
         android:textColor="#99ff99"
         android:textSize="15sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -68,7 +69,7 @@
         android:layout_height="369dp"
         android:layout_marginBottom="8dp"
         android:layout_marginTop="52dp"
-        android:gravity="center"
+        android:gravity="center|start"
         android:keepScreenOn="true"
         android:text="Plans"
         android:textColor="#99ff99"
