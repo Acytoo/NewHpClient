@@ -2,16 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.acytoo.newhpcliend">
 
-
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- 获取天气信息 -->
 
-
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-
 
     <application
         android:name=".MyApplication"
@@ -32,59 +29,54 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-
         <activity
             android:name=".ui.LoginActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="false"
             android:label="@string/title_activity_login"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".ui.EditPlanActivity"
             android:excludeFromRecents="true"
             android:exported="false"
             android:finishOnTaskLaunch="false"
             android:launchMode="singleInstance" />
-
-        <activity android:name=".ui.EditPlanActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:finishOnTaskLaunch="false"/>
-
         <activity
             android:name=".ui.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:launchMode="singleInstance"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:finishOnTaskLaunch="false"/>
-
-        <activity
-            android:name=".ui.DetailActivity"
-            android:label="@string/title_activity_detail"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:finishOnTaskLaunch="false"/>
-
-        <activity android:name=".ui.AddPlanActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:finishOnTaskLaunch="false"/>
-
-        <activity android:name=".ui.RegisterActivity"
-            android:excludeFromRecents="true"
-            android:exported="false"
-            android:launchMode="singleInstance"
-            android:finishOnTaskLaunch="false"/>
-
-        <activity
-            android:name=".ui.PreferenceActivity"
-            android:label="@string/title_activity_preference"
-            android:launchMode="singleInstance"
             android:excludeFromRecents="true"
             android:exported="false"
             android:finishOnTaskLaunch="false"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:label="@string/title_activity_settings"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".ui.DetailActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="false"
+            android:label="@string/title_activity_detail"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".ui.AddPlanActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="false"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".ui.RegisterActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="false"
+            android:launchMode="singleInstance" />
+        <activity
+            android:name=".ui.PreferenceActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:finishOnTaskLaunch="false"
+            android:label="@string/title_activity_preference"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver android:name=".ui.NewAppWidget">
             <intent-filter>
@@ -101,13 +93,16 @@
             android:enabled="true"
             android:exported="true"
             android:process=":daemon_service" />
-
-        <service android:name=".service.CancelNoticeService"
+        <service
+            android:name=".service.CancelNoticeService"
             android:enabled="true"
             android:exported="true"
             android:process=":cancel_service" />
 
-
+        <activity
+            android:name=".ui.ChatActivity"
+            android:label="@string/title_activity_chat"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

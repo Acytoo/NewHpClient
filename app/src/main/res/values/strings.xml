@@ -114,6 +114,7 @@
     <string name="add_widget">Add widget</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_preference">PreferenceActivity</string>
+    <string name="title_activity_chat">ChatActivity</string>
 
 
 </resources>
