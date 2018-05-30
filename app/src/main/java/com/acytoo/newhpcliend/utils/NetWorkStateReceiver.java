@@ -33,7 +33,7 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
                 string += networkInfo.getTypeName() + " connect is " + networkInfo.isConnected() + "\n";
                 if (networkInfo.isConnected()) {
                     MyService.wsConnect();
-                    MyService.sendChat("qwerqwe ______ from stateDetector");
+                    MyService.sendChat("qwerqwe______from stateDetector");
                     Log.d("netchanged", "internet connected");
                     return;
                 }
@@ -43,6 +43,7 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
 
             //start the re sign method here.
         } catch (Exception e){
+            Log.d("wsconnect", "exception : net detector " + e.toString());
             e.printStackTrace();
         }
         Log.d("netchanged", "finish the network detector");

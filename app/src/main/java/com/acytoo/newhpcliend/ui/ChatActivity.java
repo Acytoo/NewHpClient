@@ -1,19 +1,17 @@
 package com.acytoo.newhpcliend.ui;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.acytoo.newhpcliend.MyApplication;
 import com.acytoo.newhpcliend.R;
 import com.acytoo.newhpcliend.service.MyService;
-//import com.acytoo.newhpcliend.utils.ChatListener;
+import com.acytoo.newhpcliend.utils.FileManager;
 import com.acytoo.newhpcliend.utils.MyWebSocketListener;
 import com.acytoo.newhpcliend.utils.TestWebsocket;
 
@@ -21,7 +19,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.WebSocket;
 
-import static com.acytoo.newhpcliend.service.MyService.sendChat;
 
 /**
  *
@@ -34,9 +31,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private EditText input_message_chat;
     private Button btn_send_chat;
-    private OkHttpClient okHttpClient;
     private static TextView txt_chat_board;
-    //WebSocket webSocket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,20 +41,26 @@ public class ChatActivity extends AppCompatActivity {
         input_message_chat = findViewById(R.id.input_message_chat);
         btn_send_chat = findViewById(R.id.btn_send_chat);
         txt_chat_board = findViewById(R.id.txt_chat_board);
-        //okHttpClient = new OkHttpClient();
+        String url = "ws://58.87.90.180:8080/newServer/websocket/server/stu_00000000";
+        Request request = new Request.Builder().url(url).build();
+        MyWebSocketListener listener = new MyWebSocketListener();
+        OkHttpClient client = new OkHttpClient();
+        final WebSocket webSocket = client.newWebSocket(request, listener);
 
-        //String url = "";
-        //Request request = new Request.Builder().url(url).build();
-        //webSocket = okHttpClient.newWebSocket(request, new ChatListener());
 
         btn_send_chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("wsconnect","debug + " + MyService.flag);
-                send();
-                if (TestWebsocket.webSocket == null) {
-                    Log.d("wsconnect", "test websocket is empty");
-                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String message = input_message_chat.getText().toString();
+                        FileManager fileManager = new FileManager();
+                        String id = fileManager.loadFromInternal(MyApplication.getInstance(), "login.yl");
+                        webSocket.send(id + " : " + message);
+                        //MyWebSocketListener.send("from the btn_onClick");
+                    }
+                }).start();
 
             }
         });
@@ -72,16 +73,23 @@ public class ChatActivity extends AppCompatActivity {
         if (MyService.webSocket == null ){
             Log.d("wsconnect", "empty pointer");
         }
-        MyService.sendChat(message);
-
+        else {
+            MyService.sendChat(message);
+        }
 
     }
 
 
-
     public static void chatAdd(String text) {
-        Log.d("wsconnect", "receive chat message " + text);
-        txt_chat_board.setText(txt_chat_board.getText() + "\n" + text);
+
+        try {
+            txt_chat_board.setText(txt_chat_board.getText() + "\n" + text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        //Log.d("wsconnect", "receive chat message " + text);
+        Log.d("wsconnect", "receive TEst" + text);
+        //
 
     }
 

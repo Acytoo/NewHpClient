@@ -5,32 +5,25 @@ import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
 import android.os.Looper;
-import android.os.SystemClock;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NavUtils;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.text.Layout;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -48,7 +41,6 @@ import com.acytoo.newhpcliend.utils.MyDBHandler;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -186,6 +178,8 @@ GestureDetector.OnDoubleTapListener{
             public void run() {
                 try {
                     final String weather = httpManager.getTemperature();
+                    FileManager fileManager = new FileManager();
+                    fileManager.saveToInternal(MyApplication.getInstance(), "weather", weather);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -316,7 +310,7 @@ GestureDetector.OnDoubleTapListener{
 
         //level = Level.DAY;
         login = false;
-        startMyService();
+
         showNotification();
 
 
@@ -328,6 +322,7 @@ GestureDetector.OnDoubleTapListener{
     protected void onStart() {
 
         super.onStart();
+        startMyService();
         layout.setBackgroundColor(color);
         Log.d("color", "color is " + color);
         Log.i("testActivity", "onStart");
@@ -352,6 +347,10 @@ GestureDetector.OnDoubleTapListener{
         if (slogan != null) {
             TextView txt_the_climb = findViewById(R.id.txt_the_climb);
             txt_the_climb.setText(slogan);
+        }
+        String weather = fileManager.loadFromInternal(this, "weather");
+        if (weather != null) {
+            txt_temperature.setText(weather);
         }
 
 
@@ -581,15 +580,15 @@ GestureDetector.OnDoubleTapListener{
                 if (moveX > 0) {
                     if (level == Level.DAY) {
                         calendar.add(Calendar.DATE, 1);
-                        color += 0x0000002f;
+                        //color += 0x0000002f;
                         //color = (color + 0x0000002f) % 0xffffffff;
                     } else if (level == Level.WEEK) {
                         calendar.add(Calendar.WEEK_OF_YEAR, 1);
-                        color += 0x00002f00;
+                        //color += 0x00002f00;
                         //color = (color + 0x00000f0f) % 0xffffffff;
                     } else {
                         calendar.add(Calendar.MONTH, 1);
-                        color += 0x002f0000;
+                        //color += 0x002f0000;
                         //color = (color + 0x000f0f0f) % 0xffffffff;
                     }
                     refreshActivity.putExtra("level", level.ordinal());
@@ -601,15 +600,15 @@ GestureDetector.OnDoubleTapListener{
                 } else {
                     if (level == Level.DAY) {
                         calendar.add(Calendar.DATE, -1);
-                        color -= 0x0000002f;
+                        //color -= 0x0000002f;
                         //color = (color + 0xffffffe0) % 0xffffffff;
                     } else if (level == Level.WEEK) {
                         calendar.add(Calendar.WEEK_OF_YEAR, -1);
-                        color -= 0x00002f00;
+                        //color -= 0x00002f00;
                         //color = (color + 0xfffff0f0) % 0xffffffff;
                     } else {
                         calendar.add(Calendar.MONTH, -1);
-                        color -= 0x002f0000;
+                        //color -= 0x002f0000;
                         //color = (color + 0xfff0f0f0) % 0xffffffff;
                     }
                     refreshActivity.putExtra("level", level.ordinal());

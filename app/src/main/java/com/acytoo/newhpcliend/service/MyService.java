@@ -6,14 +6,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.os.Binder;
+import android.os.Handler;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.acytoo.newhpcliend.MyApplication;
 import com.acytoo.newhpcliend.R;
-import com.acytoo.newhpcliend.ui.FullscreenActivity;
 import com.acytoo.newhpcliend.utils.HttpManager;
 import com.acytoo.newhpcliend.utils.MyCookieJar;
 import com.acytoo.newhpcliend.utils.MyDBHandler;
@@ -38,8 +37,9 @@ public class MyService extends Service {
     private boolean started = false;
     private static MyDBHandler dbHandler;
     static OkHttpClient client;
-    public static WebSocket webSocket;
-    public static String flag = "asdf";
+    public static volatile WebSocket webSocket;
+    public static String flag = "abc";
+    public static Handler handler = new Handler();
 
     NetWorkStateReceiver netWorkStateReceiver;
 
@@ -69,9 +69,6 @@ public class MyService extends Service {
         Intent intent = new Intent(this,CancelNoticeService.class);
         startService(intent);
 
-
-
-
     }
 
 
@@ -98,16 +95,15 @@ public class MyService extends Service {
         HttpManager httpManager = new HttpManager();
         httpManager.syncSlogan();
 
-        if (netWorkStateReceiver == null) {
-            netWorkStateReceiver = new NetWorkStateReceiver();
-        }
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(netWorkStateReceiver, filter);
-
-
         if (!started) {
             started = true;
+            if (netWorkStateReceiver == null) {
+                netWorkStateReceiver = new NetWorkStateReceiver();
+            }
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(netWorkStateReceiver, filter);
+
             new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -123,9 +119,10 @@ public class MyService extends Service {
                         }
                         //Log.d("wsconnect", "now the counter is " + counter);
                         counter++;
-//                        if (counter > 25) {
-//                            sendChat("counter");
-//                            Log.d("wsconnect", "send counter");
+//                        if (counter > 20 && counter < 22) {
+//                            //webSocket.send("manual");
+//                            //sendChat("counter");
+//                            //Log.d("wsconnect", "send counter");
 //                        }
                     }
                 }
@@ -172,19 +169,22 @@ public class MyService extends Service {
 
             String url = "ws://58.87.90.180:8080/newServer/websocket/server/stu_20154479";
             String url1 = "ws://58.87.90.180:8080/newServer/websocket/server/";
+            String testUrl = "wss://echo.websocket.org";
 
-            Log.d("wsconnect", identifier);
+            //Log.d("wsconnect", identifier);
             Request request = new Request.Builder().url(url1 + identifier).build();
-            //Request request = new Request.Builder().url("ws://echo.websocket.org").build();
+            //Request request = new Request.Builder().url("wss://echo.websocket.org").build();
             MyWebSocketListener listener = new MyWebSocketListener();
             client = new OkHttpClient();
             webSocket = client.newWebSocket(request, listener);
+            TestWebsocket.flag = "changed";
+            Log.d("wsconnect", "service test flag " + TestWebsocket.flag);
 
-//            if (TestWebsocket.webSocket == null){
-//                Log.d("wsconnect", "wsconnect : is empty");
-//                TestWebsocket.webSocket = webSocket;
-//            }
-//            flag = "KingJoffrey";
+            if (TestWebsocket.webSocket == null){
+                Log.d("wsconnect", "wsconnect : is empty");
+                TestWebsocket.webSocket = webSocket;
+            }
+            flag = "KingJoffrey";
 
             Log.d("wsconnect", "cookies: " + identifier);
             //webSocket.send("hello");
@@ -197,12 +197,16 @@ public class MyService extends Service {
     }
 
     public static void sendChat(String text) {
-        Log.d("wsconnect", "in send Chat, start send " + text);
+        //Log.d("wsconnect", "in send Chat, start send " + text);
         try {
-            webSocket.send("empty______"+text);
+            if (webSocket == null) {
+                Log.d("wsconnect", "empty");
+            }
+            webSocket.send(text);
+            Log.d("wsconnect", "in send Chat, finish send " + text);
         } catch (Exception e){
             Log.d("wsconnect", e.toString());
         }
-        Log.d("wsconnect", "in send Chat, finish send " + text);
+
     }
 }
