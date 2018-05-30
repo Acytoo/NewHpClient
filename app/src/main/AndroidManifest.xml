@@ -8,6 +8,7 @@
     <!-- 获取天气信息 -->
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application

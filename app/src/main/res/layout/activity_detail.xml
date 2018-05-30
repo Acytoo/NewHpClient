@@ -20,4 +20,5 @@
         android:layout_height="match_parent"
         android:id="@+id/recycler_view"
         android:layout_toStartOf="@+id/dummy" />
+
 </LinearLayout>

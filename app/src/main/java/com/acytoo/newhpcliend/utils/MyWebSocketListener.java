@@ -9,6 +9,7 @@ import okhttp3.WebSocketListener;
 import okio.ByteString;
 
 import static com.acytoo.newhpcliend.service.MyService.output;
+import static com.acytoo.newhpcliend.ui.ChatActivity.chatAdd;
 
 public class MyWebSocketListener extends WebSocketListener {
 
@@ -32,7 +33,15 @@ public class MyWebSocketListener extends WebSocketListener {
     public void onMessage(WebSocket webSocket, String text) {
         super.onMessage(webSocket, text);
         Log.d("wsconnect", "wsreceive :" + text);
-        output("Receiving :&" + text);
+        if (text.charAt(0) == '#') {
+            output("Receiving :&" + text);
+        }
+        else {
+            chatAdd(text);
+        }
+
+
+
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.acytoo.newhpcliend.ui;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,6 +49,7 @@ public class EditPlanActivity extends AppCompatActivity {
     private int planPriority;
     private Switch doneSwitch;
     private Switch autoDeleteSwitch;
+    private Button btn_chat_start;
     enum DoneFlag {
         False, True
     }
@@ -95,6 +97,7 @@ public class EditPlanActivity extends AppCompatActivity {
         planBoard = findViewById(R.id.planBoard);
         doneSwitch = findViewById(R.id.doneSwitch);
         autoDeleteSwitch = findViewById(R.id.autoDeleteSwitch);
+        btn_chat_start = findViewById(R.id.btn_chat_start);
 
         dbHandler = new MyDBHandler(this, null, null, 2);
 
@@ -223,6 +226,15 @@ public class EditPlanActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        btn_chat_start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent chatActivity = new Intent();
+                chatActivity.setClass(EditPlanActivity.this, ChatActivity.class);
+                startActivity(chatActivity);
+            }
+        });
     }
 
     @Override

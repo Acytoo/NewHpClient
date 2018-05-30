@@ -59,6 +59,7 @@ public class DetailActivity extends AppCompatActivity {
 
         url = "https://acytoo.github.io/HPSRC/priority_";
         df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
+
         Bundle getDateInfo = getIntent().getExtras();
         calendar = Calendar.getInstance();
         //caForEnd = Calendar.getInstance();
@@ -70,6 +71,7 @@ public class DetailActivity extends AppCompatActivity {
             calendar.setTimeInMillis(getDateInfo.getLong("dateLong"));
             level = FullscreenActivity.Level.values()[getDateInfo.getInt("level")];
         }
+
 
         dbHandler = new MyDBHandler(this, null, null, 2);
 

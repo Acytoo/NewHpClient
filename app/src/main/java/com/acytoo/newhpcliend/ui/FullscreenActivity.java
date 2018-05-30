@@ -10,15 +10,20 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.SystemClock;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GestureDetectorCompat;
@@ -92,41 +97,43 @@ GestureDetector.OnDoubleTapListener{
     private TextView txt_welcome;
     private int color;
     private ConstraintLayout layout;
-
-
+//    private LocationManager locationManager;
+//    private String locationProvider;
 
 
 
     public enum Level{
         DAY, WEEK, MONTH
     }
-//
-//    LocationListener locationListener =  new LocationListener() {
-//
-//        @Override
-//        public void onStatusChanged(String provider, int status, Bundle arg2) {
-//
-//        }
-//
-//        @Override
-//        public void onProviderEnabled(String provider) {
-//
-//        }
-//
-//        @Override
-//        public void onProviderDisabled(String provider) {
-//
-//        }
-//
-//        @Override
-//        public void onLocationChanged(Location location) {
-//            //如果位置发生变化,重新显示
-//            showLocation(location);
-//
-//        }
-//    };
 
+    private final LocationListener locationListener =  new LocationListener() {
 
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle arg2) {
+            Log.d("ytlocation", "onStatusChanged");
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Log.d("ytlocation", "onProviderEnabled");
+
+        }
+
+        @Override
+        public void onProviderDisabled(String provider) {
+            Log.d("ytlocation", "onProviderDisabled");
+
+        }
+
+        @Override
+        public void onLocationChanged(Location location) {
+            //如果位置发生变化,重新显示
+            Log.d("ytlocation", "onLocationChanged");
+            showLocation(location);
+
+        }
+
+    };
 
 
     @Override
@@ -136,6 +143,38 @@ GestureDetector.OnDoubleTapListener{
         setContentView(R.layout.activity_fullscreen);
         layout = findViewById(R.id.main_layout);
         color = 0xff000000;
+
+        /*
+        receive information about the level and date to show
+         */
+        Bundle getDateInfo = getIntent().getExtras();
+        calendar = Calendar.getInstance();
+        if (getDateInfo == null){
+            Log.d("testActivity", "no information received");
+            calendar.setTime(new Date());
+            calendar.setTimeZone(TimeZone.getDefault());    //get your TimeZone
+            calendar.set(Calendar.MILLISECOND, 0);  //We need to set the millisecond to 0
+            calendar.set(Calendar.HOUR_OF_DAY,0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            level = FullscreenActivity.Level.DAY;
+        }
+        else{
+            long dateToShow = getDateInfo.getLong("dateLong");
+            if (dateToShow != 0) {
+                calendar.setTimeInMillis(dateToShow);
+                level = FullscreenActivity.Level.values()[getDateInfo.getInt("level")];
+            } else {
+                calendar.setTime(new Date());
+                calendar.setTimeZone(TimeZone.getDefault());    //get your TimeZone
+                calendar.set(Calendar.MILLISECOND, 0);  //We need to set the millisecond to 0
+                calendar.set(Calendar.HOUR_OF_DAY,0);
+                calendar.set(Calendar.MINUTE, 0);
+                calendar.set(Calendar.SECOND, 0);
+                level = FullscreenActivity.Level.DAY;
+            }
+
+        }
 
         init();
 
@@ -165,41 +204,88 @@ GestureDetector.OnDoubleTapListener{
 
 //        try {
 //            //获取地理位置管理器
-//            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//            //获取所有可用的位置提供器
-//            List<String> providers = locationManager.getProviders(true);
-//            if (providers.contains(LocationManager.GPS_PROVIDER)) {
-//                //如果是GPS
-//                locationProvider = LocationManager.GPS_PROVIDER;
-//            } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
-//                //如果是Network
-//                locationProvider = LocationManager.NETWORK_PROVIDER;
-//            } else {
-//                Toast.makeText(this, "没有可用的位置提供器", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
+////            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+////            //获取所有可用的位置提供器
+////            List<String> providers = locationManager.getProviders(true);
+////            if (providers.contains(LocationManager.GPS_PROVIDER)) {
+////                //如果是GPS
+////                locationProvider = LocationManager.GPS_PROVIDER;
+////            } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
+////                //如果是Network
+////                locationProvider = LocationManager.NETWORK_PROVIDER;
+////            } else {
+////                Toast.makeText(this, "没有可用的位置提供器", Toast.LENGTH_SHORT).show();
+////                return;
+////            }
 //            //获取Location
-//            Location location = locationManager.getLastKnownLocation(locationProvider);
+//            if(ActivityCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+//                Toast.makeText(this, "没有可用的位置提供器", Toast.LENGTH_SHORT).show();
+//            }
+//            LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+//
+//            Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//            //location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//
+//            //监视地理位置变化
+//            locationManager.requestLocationUpdates("gps", 6000, 1, locationListener);
+//
+//            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+//            Log.d("ytlocation", "before if ");
 //            if (location != null) {
 //                //不为空,显示地理位置经纬度
 //                showLocation(location);
 //            }
-//            //监视地理位置变化
-//            locationManager.requestLocationUpdates(locationProvider, 3000, 1, locationListener);
+//            else {
+//                Log.d("ytlocation", "after if : empty");
+//            }
 //        } catch (SecurityException e){
 //            e.printStackTrace();
-//            Log.d("location", e.toString());
+//            Log.d("ytlocation", e.toString());
 //        } catch (NullPointerException e) {
 //            e.printStackTrace();
-//            Log.d("location", "hello "+e.toString());
+//            Log.d("ytlocation", "hello "+e.toString());
 //        }
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                getLocation();
+            }
+        };
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Looper.prepare();
+                temperatureHandler.post(runnable);
+                Looper.loop();
+            }
+        }).start();
 
+    }
+
+    private Location getLocation(){
+        if(ActivityCompat.checkSelfPermission(getApplicationContext(),Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(this, "没有可用的位置提供器", Toast.LENGTH_SHORT).show();
+        }
+        LocationManager locationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
+
+        Location location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+        //监视地理位置变化
+        Log.d("ytlocation","begin");
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000,0,locationListener);
+        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 1000,0,locationListener);
+        Log.d("ytlocation", "all providers " + locationManager.getAllProviders());
+        Log.d("ytlocation","end");
+        if(location != null) showLocation(location);
+        return location;
     }
 
     private void showLocation(Location location){
         String locationStr = "维度：" + location.getLatitude() +"\n"
                 + "经度：" + location.getLongitude();
-        Log.d("location", locationStr);
+        Toast.makeText(getApplicationContext(), "find",Toast.LENGTH_SHORT).show();
+        Log.d("ytlocation", locationStr);
     }
 
 
@@ -225,15 +311,10 @@ GestureDetector.OnDoubleTapListener{
         txt_plan_board = findViewById(R.id.txt_plan_board);
         txt_temperature = findViewById(R.id.txt_temperature);
         txt_welcome = findViewById(R.id.txt_welcome);
-        calendar = Calendar.getInstance();
+
         caForEnd = Calendar.getInstance();
-        calendar.setTime(new Date());
-        calendar.setTimeZone(TimeZone.getDefault());    //get your TimeZone
-        calendar.set(Calendar.MILLISECOND, 0);  //We need to set the millisecond to 0
-        calendar.set(Calendar.HOUR_OF_DAY,0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        level = Level.DAY;
+
+        //level = Level.DAY;
         login = false;
         startMyService();
         showNotification();
@@ -328,6 +409,8 @@ GestureDetector.OnDoubleTapListener{
         super.onResume();
         Log.i("testActivity", "onResume");
     }
+
+
 
 
     public static long getLastDayMillis(long givenMillis){
@@ -489,8 +572,9 @@ GestureDetector.OnDoubleTapListener{
 
         double absX = abs(moveX);
         double absY = abs(moveY);
-        Intent anotherDay = new Intent();
-        anotherDay.setClass(FullscreenActivity.this, FullscreenActivity.class);
+
+        Intent refreshActivity = new Intent();
+        refreshActivity.setClass(FullscreenActivity.this, FullscreenActivity.class);
 
         while (absX > minDistance || absY > minDistance) {
             if (absX > absY) {
@@ -508,6 +592,11 @@ GestureDetector.OnDoubleTapListener{
                         color += 0x002f0000;
                         //color = (color + 0x000f0f0f) % 0xffffffff;
                     }
+                    refreshActivity.putExtra("level", level.ordinal());
+                    refreshActivity.putExtra("dateLong", calendar.getTimeInMillis());
+                    startActivity(refreshActivity);
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_left);
+
                     break;
                 } else {
                     if (level == Level.DAY) {
@@ -523,6 +612,10 @@ GestureDetector.OnDoubleTapListener{
                         color -= 0x002f0000;
                         //color = (color + 0xfff0f0f0) % 0xffffffff;
                     }
+                    refreshActivity.putExtra("level", level.ordinal());
+                    refreshActivity.putExtra("dateLong", calendar.getTimeInMillis());
+                    startActivity(refreshActivity);
+                    overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_right);
                     break;
                 }
             }
@@ -530,14 +623,24 @@ GestureDetector.OnDoubleTapListener{
             //Alec Chen
             if (moveY > 0) {
                 level = Level.values()[Math.abs(level.ordinal()+2)%3];
-                //overridePendingTransition(R.anim.go_up, R.anim.go_up);
+                refreshActivity.putExtra("level", level.ordinal());
+                refreshActivity.putExtra("dateLong", calendar.getTimeInMillis());
+                startActivity(refreshActivity);
+                overridePendingTransition(R.anim.go_up, R.anim.go_up);
                 break;
             }
             level = Level.values()[Math.abs(level.ordinal()+4)%3];
-            //overridePendingTransition(R.anim.go_down, R.anim.go_down);
+            refreshActivity.putExtra("level", level.ordinal());
+            refreshActivity.putExtra("dateLong", calendar.getTimeInMillis());
+            startActivity(refreshActivity);
+            overridePendingTransition(R.anim.go_down, R.anim.go_down);
             break;
         }
-        onStart();
+
+
+
+//        onStart();
+        finish();
         return true;
 
     }

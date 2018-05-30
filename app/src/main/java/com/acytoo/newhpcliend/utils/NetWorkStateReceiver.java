@@ -33,6 +33,7 @@ public class NetWorkStateReceiver extends BroadcastReceiver {
                 string += networkInfo.getTypeName() + " connect is " + networkInfo.isConnected() + "\n";
                 if (networkInfo.isConnected()) {
                     MyService.wsConnect();
+                    MyService.sendChat("qwerqwe ______ from stateDetector");
                     Log.d("netchanged", "internet connected");
                     return;
                 }

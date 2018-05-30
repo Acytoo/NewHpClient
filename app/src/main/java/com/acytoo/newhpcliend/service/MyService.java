@@ -20,6 +20,7 @@ import com.acytoo.newhpcliend.utils.MyDBHandler;
 import com.acytoo.newhpcliend.utils.MyWebSocketListener;
 import com.acytoo.newhpcliend.utils.NetWorkStateReceiver;
 import com.acytoo.newhpcliend.utils.Plans;
+import com.acytoo.newhpcliend.utils.TestWebsocket;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -37,6 +38,8 @@ public class MyService extends Service {
     private boolean started = false;
     private static MyDBHandler dbHandler;
     static OkHttpClient client;
+    public static WebSocket webSocket;
+    public static String flag = "asdf";
 
     NetWorkStateReceiver netWorkStateReceiver;
 
@@ -71,12 +74,9 @@ public class MyService extends Service {
 
     }
 
-    /**
-     * in this class, we return the internet service
-     * @return
-     */
 
-            public String getCurrentDate(){
+
+    public String getCurrentDate(){
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd", Locale.CHINA);
         return df.format(new Date());
     }
@@ -95,13 +95,8 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        //FullscreenActivity.txt_temperature.setText("qwertyuio");
-
-        Log.d("slogan", "onStartCommand, soSimpleGet");
         HttpManager httpManager = new HttpManager();
         httpManager.syncSlogan();
-        //httpManager.getTemperature();
-        //changedTemp();
 
         if (netWorkStateReceiver == null) {
             netWorkStateReceiver = new NetWorkStateReceiver();
@@ -126,8 +121,12 @@ public class MyService extends Service {
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        Log.d("counter", "now the counter is " + counter);
+                        //Log.d("wsconnect", "now the counter is " + counter);
                         counter++;
+//                        if (counter > 25) {
+//                            sendChat("counter");
+//                            Log.d("wsconnect", "send counter");
+//                        }
                     }
                 }
             }).start();
@@ -148,13 +147,16 @@ public class MyService extends Service {
             e.printStackTrace();
         }
 
-
         // 重启自己
         Intent intent = new Intent(getApplicationContext(),MyService.class);
         startService(intent);
         super.onDestroy();
     }
 
+    /**
+     * 需要手动刷新界面去查看是否有新通知
+     * @param txt
+     */
     public static void output(final String txt){
         String plan = txt.split("&")[1];
         dbHandler.addPlan(new Plans(new Date().getTime(), 7, 0,
@@ -170,10 +172,6 @@ public class MyService extends Service {
 
             String url = "ws://58.87.90.180:8080/newServer/websocket/server/stu_20154479";
             String url1 = "ws://58.87.90.180:8080/newServer/websocket/server/";
-            //"wss://echo.websocket.org"
-            WebSocket webSocket;
-
-            //String identifiter = MyCookieJar.getLastCookie();
 
             Log.d("wsconnect", identifier);
             Request request = new Request.Builder().url(url1 + identifier).build();
@@ -182,22 +180,29 @@ public class MyService extends Service {
             client = new OkHttpClient();
             webSocket = client.newWebSocket(request, listener);
 
+//            if (TestWebsocket.webSocket == null){
+//                Log.d("wsconnect", "wsconnect : is empty");
+//                TestWebsocket.webSocket = webSocket;
+//            }
+//            flag = "KingJoffrey";
+
             Log.d("wsconnect", "cookies: " + identifier);
             //webSocket.send("hello");
-            //webSocket.request();
-            //Log.d("wsconnect", "queueSize " + webSocket.queueSize());
-            Log.d("wsconnect", "sent");
 
-            /**
-             * 一共会有几个cookie?是否过期怎么判断
-             *
-             * 过期后如何处理？
-             * 是根据网址区分
-             * 掉线处理
-             */
+
+            //Log.d("wsconnect", "connection established and sent hello message");
+
 
         }
-        Log.d("netchanged", "finish the wsConnect serive");
     }
 
+    public static void sendChat(String text) {
+        Log.d("wsconnect", "in send Chat, start send " + text);
+        try {
+            webSocket.send("empty______"+text);
+        } catch (Exception e){
+            Log.d("wsconnect", e.toString());
+        }
+        Log.d("wsconnect", "in send Chat, finish send " + text);
+    }
 }
